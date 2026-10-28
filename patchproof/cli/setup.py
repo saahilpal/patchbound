@@ -1,6 +1,5 @@
 """First-time setup, health check diagnostics, and system readiness verification."""
 
-import os
 import shutil
 import subprocess
 import sys
@@ -10,6 +9,7 @@ from typing import Any
 from rich.table import Table
 
 from patchproof.config import settings
+from patchproof.core.credentials import CredentialStore
 from patchproof.github.client import GitHubClient
 from patchproof.ui.console import console
 
@@ -155,7 +155,7 @@ PATCHPROOF_AUTO_APPROVE=true
         else:
             syn_check.warning = True
             syn_check.message = "Not installed (Optional; Standard AST fallback active)"
-            syn_check.remedy = "Synapse provides deep call-graph indexing for complex repos"
+            syn_check.remedy = "Run 'patchproof synapse install' or 'pip install synap-git'"
         checks.append(syn_check)
 
         # 6. Scratch Storage & Workspace Directories
@@ -184,9 +184,11 @@ PATCHPROOF_AUTO_APPROVE=true
 
         # 8. AI Model Providers
         llm_check = DiagnosticCheck("AI Model Providers", "AI Gateway", required=False)
-        anthropic_key = os.environ.get("PATCHPROOF_ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
-        gemini_key = os.environ.get("PATCHPROOF_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
-        openai_key = os.environ.get("PATCHPROOF_OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
+        store = CredentialStore()
+        anthropic_key = store.get_key("anthropic")
+        gemini_key = store.get_key("gemini")
+        openai_key = store.get_key("openai")
+        deepseek_key = store.get_key("deepseek")
 
         active_providers: list[str] = []
         if anthropic_key:
@@ -195,6 +197,8 @@ PATCHPROOF_AUTO_APPROVE=true
             active_providers.append("Gemini (1.5 Pro / 2.0)")
         if openai_key:
             active_providers.append("OpenAI (GPT-4o)")
+        if deepseek_key:
+            active_providers.append("DeepSeek (V3 / R1)")
 
         if active_providers:
             llm_check.passed = True
@@ -202,7 +206,7 @@ PATCHPROOF_AUTO_APPROVE=true
         else:
             llm_check.warning = True
             llm_check.message = "No cloud API keys detected; Local Deterministic Spine active"
-            llm_check.remedy = "Set ANTHROPIC_API_KEY or GEMINI_API_KEY in .env for autonomous reasoning"
+            llm_check.remedy = "Run 'patchproof auth login' to add your API keys securely"
         checks.append(llm_check)
 
         return checks

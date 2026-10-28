@@ -2,18 +2,20 @@
 
 <div align="center">
 
+[![PyPI](https://img.shields.io/pypi/v/patchproof.svg?logo=pypi&logoColor=white)](https://pypi.org/project/patchproof/)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-orange?logo=github)](https://github.com/saahilpal/patchproof/releases/tag/v1.1.0)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue?logo=python)](pyproject.toml)
 [![Type Checking](https://img.shields.io/badge/Type%20Checking-mypy%20strict-brightgreen?logo=python)](pyproject.toml)
 [![Linter](https://img.shields.io/badge/Linter-ruff-black?logo=ruff)](pyproject.toml)
-[![Tests](https://img.shields.io/badge/Tests-48%20passed-success?logo=pytest)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-56%20passed-success?logo=pytest)](tests/)
+[![Powered By Synapse](https://img.shields.io/badge/AST%20Engine-Synapse%20v2.4-blueviolet)](https://github.com/saahilpal/synapse)
 [![Verification](https://img.shields.io/badge/Assurance%20Levels-V1%20to%20V3%20CI--Clean-purple)](docs/VERIFICATION_AND_CLAIM_LEDGER.md)
-[![Release](https://img.shields.io/badge/Release-v1.1.0-orange)](https://github.com/saahilpal/patchproof/releases/tag/v1.1.0)
 
 **The Deterministic Trust Boundary & Bounded AI Repair Engine.**  
-*Autonomous software diagnosis and verification for mission-critical codebases.*
+*Autonomous software diagnosis, AST call graph navigation, and cryptographic verification for mission-critical codebases.*
 
-[Features](#-core-capabilities) • [Architecture](#-first-principles-architecture) • [Comparison](#-industry-comparison) • [Quickstart](#-quickstart--cli-commands) • [Documentation](#-documentation-index)
+[Philosophy](#-the-core-philosophy) • [Under the Hood](#-under-the-hood-the-7-step-causal-repair-lifecycle) • [Supercharged by Synapse](#-supercharged-by-synapse-by-saahilpal) • [Competitor Analysis](#-competitive-landscape--first-principles-differentiation) • [Quickstart & CLI](#-quickstart--cli-reference) • [Secure Auth](#-secure-credential-management-0600-invariants) • [Docs](#-documentation-index)
 
 </div>
 
@@ -21,189 +23,298 @@
 
 ## 💡 The Core Philosophy
 
-Most autonomous coding agents fail in production because they treat the LLM as the entire system—wrapping an untrusted generative model in loose, unconstrained bash loops. This creates fatal failure modes:
+Most autonomous coding agents fail in production because they treat the Large Language Model as the entire system—wrapping an untrusted generative model in loose, unconstrained bash loops. This creates four fatal failure modes:
 
 1. **Hallucinated Passing Conditions:** The model claims a test passed when it didn't, or deletes failing assertions to "fix" the bug.
-2. **Oracle Tampering & Test Gaming:** Models monkey-patch test suites (`unittest.mock.patch`), add `@pytest.mark.skip`, or insert `sys.exit(0)`.
-3. **Context Drift & Runaway Token Spend:** Unbounded agentic loops pile up thousands of noisy tokens across 15+ conversational turns.
+2. **Oracle Tampering & Test Gaming:** Models monkey-patch test suites (`unittest.mock.patch`), add `@pytest.mark.skip`, or insert `sys.exit(0)` to fake green builds.
+3. **Naive Vector RAG Drift:** Standard vector embeddings search by keyword similarity, failing completely on dynamic dispatch, inheritance hierarchies, and caller-callee reverse dependencies.
+4. **Context Drift & Runaway Token Spend:** Unbounded agentic loops pile up thousands of noisy tokens across 15–30 conversational turns without convergence.
 
 **PatchProof inverts the paradigm from first principles:**
 
 > **"The intelligence is an untrusted, probabilistic leaf node. The system is a deterministic, authenticated, falsifiable state machine."**
 
-Every proposed code change is executed in an **ephemeral hardlink clone**, verified against **pinned, hash-restored test oracles**, audited by an **AST anti-cheat scanner**, and recorded in a **cryptographic, hash-chained Claim Ledger**.
+Every proposed code change is executed in an **ephemeral hardlink sandbox clone**, navigated via a **SQLite AST structural graph** (powered by Synapse), verified against **pinned, hash-restored test oracles**, audited by an **AST anti-cheat scanner**, and recorded in a **cryptographic, SHA-256 hash-chained Claim Ledger**.
 
 ---
 
-## ⚡ Core Capabilities
+## 🔬 Under the Hood: The 7-Step Causal Repair Lifecycle
 
-- 🔒 **Deterministic Ephemeral Sandboxing:** Every reproduction and verification attempt runs in an isolated hardlink clone (`/tmp/patchproof-workspaces`) with `core.hooksPath=/dev/null` and scrubbed environment variables (`PYTHONPATH`, `NODE_PATH`).
-- 📌 **Pinned Test Oracles:** Test suites and build configs are cryptographically snapshotted. Before verification runs, oracles are restored to guarantee the patch didn't tamper with test assertions.
-- 🚫 **AST Anti-Cheat & Egress Gates:** Static AST analyzers reject patches that delete assertions, inject mocks into production code, or bypass test runners. Egress gates redact secrets (AWS keys, GitHub PATs, private keys) from all outbound tokens.
-- 🔬 **Epistemological Claim Ledger:** Replaces hand-wavy model rationales with typed, audited claims:
-  - `OBSERVED`: Ground-truth execution facts (exit codes, JUnit signatures).
-  - `DERIVED`: Deterministic AST & call graph derivations (Synapse / AST locations).
-  - `INFERRED`: Causal hypotheses validated via scratchpad experiments.
-  - `ASSUMED`: Unverified heuristics (explicitly flagged in audit reports).
-- 🚦 **Formal Verification Levels (V1 to V3):**
-  - **Level V1:** Failing tests (Fail-to-Pass / F2P) pass cleanly.
-  - **Level V2:** V1 achieved + existing passing tests (Pass-to-Pass / P2P) remain green.
-  - **Level V3 (CI-Clean):** V2 achieved + complete repository CI command passes with zero regressions.
-- 🐙 **Autonomous GitHub Workflow:** Fetch GitHub issues, clone repos, reproduce bugs, execute 9-stage causal repair loops, and open verified Pull Requests with cryptographic provenance.
+When you run `patchproof repair` or `patchproof gh solve`, PatchProof executes a deterministic, bounded pipeline where every state transition is falsifiable and audited:
 
----
-
-## 🏛️ First-Principles Architecture
-
-PatchProof is structured as a **9-Stage Bounded StateGraph** managed via LangGraph, with strict linear invariants and conditional back-propagation loops:
-
-```mermaid
-flowchart TD
-    subgraph S1["Stage 1-3: Deterministic Triage Spine"]
-        N1["1. Snapshot & Reproduce<br/>(Local Ephemeral Clone)"] --> N2["2. Parse & Triage<br/>(Deterministic Signatures)"]
-        N2 --> N3{"3. Repairability Gate"}
-    end
-
-    subgraph S2["Stage 4-6: Causal Repair & Verification Loop"]
-        N3 -->|Reproduced| N4["4. Investigator Loop<br/>(Synapse AST + Claim Ledger)"]
-        N4 --> N5["5. Fixer Node<br/>(Anchored Text Edits)"]
-        N5 --> N6["6. Patch Gate & Verify<br/>(Pinned Oracle + Levels V1-V3)"]
-        N6 -->|Fail & Attempts Left| N4
-    end
-
-    subgraph S3["Stage 7-9: Review, Governance & Export"]
-        N6 -->|Verified V1-V3| N7["7. Blind Reviewer<br/>(Anti-Cheat + EgressGate)"]
-        N7 -->|Approved| N8["8. Human Approval Gate<br/>(Cryptographic Signature)"]
-        N8 --> N9["9. Export & Audit Journal<br/>(SHA-256 Hash Chain)"]
-        N7 -->|Rejected & Attempts Left| N4
-        N3 -->|Flaky / Unreproducible| N9
-        N6 -->|Budget Exhausted| N9
-    end
-
-    classDef stage fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4;
-    classDef gate fill:#313244,stroke:#f38ba8,stroke-width:2px,color:#f38ba8;
-    class N1,N2,N4,N5,N6,N7,N9 stage;
-    N3,N8 class gate;
+```
+[Target Codebase] ──> (1. Ephemeral Sandbox Clone)
+                            │
+                            ▼
+                      (2. Reproduction Gate) ──[Fail? Reject early: zero token waste]
+                            │
+                            ▼
+                      (3. Synapse AST Graph Traversal)
+                            │  ├── Caller-Callee Edge Resolution
+                            │  └── Impacted Test Suite Backtracking
+                            ▼
+                      (4. Epistemological Claim Ledger)
+                            │  ├── OBSERVED: Exit codes, JUnit traces
+                            │  └── DERIVED: AST symbol coordinates
+                            ▼
+                      (5. Anchored Patch Synthesis)
+                            │  └── Exact (file, old_text, new_text) pairs
+                            ▼
+                      (6. Differential Verification Gate)
+                            │  ├── Sandbox B (Patched Clone)
+                            │  ├── Pinned Oracle Restoration (`git checkout -- tests/`)
+                            │  ├── AST Anti-Cheat Assertions (`@pytest.mark.skip` rejected)
+                            │  └── Secret Egress Filtering (Redacts keys & tokens)
+                            ▼
+                      (7. Cryptographic Journaling & Signed PR)
+                            └── SHA-256 Hash Chain + Ed25519 Approval Signature
 ```
 
-### The 9 Execution Stages
+### Detailed Mechanics
 
-| Stage | Name | Character | Function |
-| :---: | :--- | :---: | :--- |
-| **1** | `snapshot_reproduce` | Deterministic | Creates disposable clone; executes baseline test command $N$ times to classify flaky vs reproducible bugs. |
-| **2** | `parse_triage` | Deterministic | Parses structured JUnit XML / JSON traces into normalized `FailureSignature` fingerprints. |
-| **3** | `repairability_gate` | Deterministic | Blocks unfixable, flaky, or environment-mismatched failures before calling LLMs. |
-| **4** | `investigator` | Agentic / Causal | Queries Synapse AST graph, formulates hypotheses, executes scratch interventions, and builds `ClaimLedger`. |
-| **5** | `fixer` | Structured LLM | Synthesizes minimal causal repair plan and anchored edits `(file_path, old_text, new_text)`. |
-| **6** | `patch_verify` | Deterministic | Creates clean clone, applies edits, restores pinned test oracle, and asserts Level V1–V3 verification. |
-| **7** | `review` | Independent Critic | Blind review of canonical diff without fixer explanation; checks anti-cheat invariants and secret egress. |
-| **8** | `human_approval` | Governance | Binds patch digest, verification hash, and policy metadata into a cryptographic signature. |
-| **9** | `export_report` | Deterministic | Records immutable entry in `AuditJournal` (SHA-256 chain) and exports diagnostic Markdown report. |
-
----
-
-## 🥊 Industry Comparison
-
-| Capability | **PatchProof v1.1** | Devin / OpenHands | Aider | Standard Chatbot (ChatGPT / Claude) |
-| :--- | :---: | :---: | :---: | :---: |
-| **Trust Boundary** | **Thick Deterministic Spine** | Loose Prompt Loop | Git Commits Only | None (Prompt only) |
-| **Test Verification** | **Formal Levels (V1–V3)** | Raw Test Output | Terminal Regex | Model Self-Report |
-| **Oracle Pinning** | **Cryptographic Snapshot & Restore** | ❌ No (Can edit tests) | ❌ No | ❌ No |
-| **Anti-Cheat Scanner** | **AST-Level & Regex Guard** | ❌ No | ❌ No | ❌ No |
-| **Secret Egress Gate** | **Pre-Flight Regex & Entropy** | ❌ No | ❌ No | ❌ No |
-| **Claim Provenance** | **Audited Epistemological Ledger** | ❌ No | ❌ No | ❌ No |
-| **Structural AST Index** | **Synapse SQLite AST Graph** | Basic Vector/LSP | Universal Ctags | None |
-| **Audit Trail** | **SHA-256 Hash-Chained Journal** | Session Logs | Git History | Session Logs |
-| **Deterministic Offline Mode**| **100% Functional without LLMs** | ❌ Requires API | ❌ Requires API | ❌ Requires API |
+1. **Ephemeral Sandboxing (`Copy-on-Write / Hardlinks`):**
+   PatchProof creates disposable, isolated workspace clones in `/tmp/patchproof-workspaces` using Git hardlinks. The host repository is never touched directly during diagnosis or exploration. All git hooks are disabled (`core.hooksPath=/dev/null`) and runtime variables are scrubbed (`PYTHONPATH`, `NODE_PATH`).
+2. **Deterministic Baseline Reproduction:**
+   Before a single LLM token is spent, the test command is executed in the clean baseline sandbox. If the bug does not fail deterministically, PatchProof terminates immediately with an unreproducible classification—saving 100% of LLM costs.
+3. **AST Call Graph Traversal (Synapse Integration):**
+   Instead of naive vector similarity, PatchProof queries a local SQLite AST call graph (`.synap/synap.db`). It identifies the exact caller-callee chains, class hierarchies, and executes reverse dependency analysis to discover every test that exercises the modified code.
+4. **Epistemological Claim Ledger:**
+   The agent cannot make ungrounded assertions. Every fact is typed into an audited ledger:
+   - `OBSERVED`: Ground-truth execution facts (exit code = 1, `AssertionError: expected 5 got 0`).
+   - `DERIVED`: Deterministic AST derivations (symbol `calculate_tax` at `tax.py:45`).
+   - `INFERRED`: Hypotheses verified via isolated scratchpad interventions.
+   - `ASSUMED`: Unverified heuristics (flagged in audit warnings).
+5. **Minimal Anchored Patch Generation:**
+   Instead of generating full files (which introduces hallucinations and merge conflicts), PatchProof synthesizes strict anchored replacement blocks: `(file_path, old_text, new_text)`.
+6. **Pinned Test Oracle & Anti-Cheat Gate:**
+   PatchProof applies the patch to a fresh clone (`Sandbox B`) and immediately runs:
+   ```bash
+   git checkout -- tests/ **/test_*.py conftest.py
+   ```
+   This guarantees that an AI cannot "fix" a bug by modifying the test assertions. Furthermore, an AST visitor inspects all modified files to reject any commit containing skip annotations (`@pytest.mark.skip`, `@unittest.skip`, `@ts-ignore`), removed assertion statements, or injected mocks.
+7. **Multi-Tier Assurance (Levels V1 to V3):**
+   - **Level V1 (Fail-to-Pass):** The failing test case flips deterministically to `PASS`.
+   - **Level V2 (Pass-to-Pass):** All previously passing tests in the impacted suite remain `PASS`.
+   - **Level V3 (CI-Clean):** The complete repository CI test suite passes with zero regressions.
 
 ---
 
-## 🚀 Quickstart & CLI Commands
+## ⚡ Supercharged by Synapse (by @saahilpal)
 
-### 1. Installation
-Managed cleanly via `uv` (no global `pip` contamination):
+PatchProof natively integrates with **[Synapse](https://github.com/saahilpal/synapse)** (`synap-git`), an open-source, deterministic Git-aware structural retrieval engine created by [@saahilpal](https://github.com/saahilpal).
+
+### Why Traditional RAG Fails for Autonomous Coding
+
+Standard coding agents rely on vector databases (OpenAI embeddings, Chroma, Pinecone). In practice, vector search fails on codebases:
+- **No Edge Awareness:** Vector search matches keyword similarity, but cannot traverse caller-to-callee call graphs.
+- **Dynamic Dispatch Blindness:** Vector search cannot resolve interface implementations or polymorphic method calls.
+- **Massive Token Waste:** Agents dump 20+ irrelevantly "similar" code chunks into the prompt context, blowing through rate limits.
+
+### How Synapse Transforms PatchProof
+
+Synapse parses the target codebase's Abstract Syntax Tree (AST) into a lightning-fast local SQLite database (`.synap/synap.db`):
+- **Deterministic Symbol Resolution:** Sub-millisecond lookup of functions, methods, classes, and types.
+- **Bidirectional Call Graphs:** Maps who calls a function, and all functions called by it.
+- **Impacted Test Prediction:** Computes the exact transitive reverse dependency closure of any modified file to run the minimal set of impacted tests.
+
+### Connecting & Managing Synapse via CLI
+
+PatchProof provides dedicated CLI commands to manage Synapse out-of-the-box:
 
 ```bash
-# Clone the repository
+# 1. Install Synapse via the PatchProof CLI
+patchproof synapse install
+
+# Or install directly with pip / uv
+pip install synap-git
+uv tool install synap-git
+
+# 2. Initialize and index your repository
+cd /path/to/your/project
+patchproof synapse index .
+
+# 3. Inspect index health, indexed symbols, and call graph edges
+patchproof synapse status .
+```
+
+Output:
+```
+                   ⚡ Synapse Structural Intelligence Status                   
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Property                   ┃ Status / Value                                 ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Synapse CLI (`synap`)      │ Installed (/Users/.../.local/bin/synap)         │
+│ Database Index (`.synap`)  │ Found (.synap/synap.db)                        │
+│ Indexed Files              │ 218                                            │
+│ Indexed Symbols (AST)      │ 667                                            │
+│ Call Graph Edges           │ 639                                            │
+└────────────────────────────┴────────────────────────────────────────────────┘
+```
+
+You can also run structural queries directly:
+```bash
+patchproof synapse search "def calculate_tax"
+```
+
+---
+
+## 🥊 Competitive Landscape & First-Principles Differentiation
+
+| Feature / Invariant | **PatchProof v1.1** | Devin (Cognition AI) | OpenHands (OpenDevin) | SWE-agent (Princeton) | Aider (Paul Gauthier) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Architecture** | **Thick Deterministic Spine** | Proprietary Agent Loop | General ReAct Loop | ACI Shell Loop | Interactive Git Pair |
+| **Context Retrieval** | **Synapse SQLite AST Graph** | Cloud Vector / LSP | Vector Embeddings | File Grep & Ctags | Universal Ctags / Grep |
+| **Test Oracle Pinning** | **Cryptographic Snapshot & Restore** | ❌ No (Can edit tests) | ❌ No | ❌ No | ❌ No (User verifies) |
+| **Anti-Cheat AST Gate** | **AST & Regex Inspection** | ❌ None | ❌ None | ❌ None | ❌ None |
+| **Sandboxing Model** | **Ephemeral Hardlink Sandbox** | Cloud VM (Remote) | Docker Container | Docker Container | Local Host Git Tree |
+| **Verification Assurance** | **Formal Levels V1–V3** | Unstructured Logs | Terminal Exit Code | Terminal Exit Code | User Acceptance |
+| **Audit Provenance** | **SHA-256 Claim Ledger** | Proprietary Session | Session JSON | Trajectory JSONL | Git History |
+| **Secret Egress Filtering** | **Pre-Flight Redaction Engine** | ❌ No | ❌ No | ❌ No | ❌ No |
+| **Deterministic Mode** | **100% Offline (No LLM Required)** | ❌ Cloud SaaS Only | ❌ Requires LLM | ❌ Requires LLM | ❌ Requires LLM |
+| **Open Source License** | **Apache 2.0 (100% Free)** | ❌ Closed Source | MIT | MIT | Apache 2.0 |
+
+---
+
+## 🔑 Secure Credential Management (0600 Invariants)
+
+PatchProof handles your AI provider credentials and GitHub tokens with banking-grade security.
+
+### Strict Filesystem Invariants
+
+- **Storage Location:** `~/.config/patchproof/credentials.json`
+- **Directory Mode:** `0700` (`rwx------`, owner-only read/write/execute)
+- **File Mode:** `0600` (`rw-------`, owner-only read/write)
+- **Zero Console Echo:** Interactive inputs use `click.prompt(hide_input=True)`.
+- **Zero Log Leakage:** CLI outputs and diagnostic tables mask keys (e.g. `sk-ant-...4a9e`).
+- **Precedence Hierarchy:** `PATCHPROOF_<PROVIDER>_KEY` > `<PROVIDER>_KEY` > `credentials.json`.
+
+### Authentication Commands
+
+```bash
+# Guided interactive login (prompts for keys with masked input)
+patchproof auth login
+
+# Configure a specific provider
+patchproof auth set-key anthropic
+patchproof auth set-key gemini
+patchproof auth set-key openai
+patchproof auth set-key deepseek
+patchproof auth set-key github
+
+# Check credential status and active sources
+patchproof auth status
+
+# Safely delete credentials
+patchproof auth logout anthropic
+patchproof auth logout all
+```
+
+Status Display:
+```
+                🔑 PatchProof Authentication & Credential Store                 
+┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Provider   ┃ Env Variable       ┃   Status   ┃ Source         ┃ Masked Key    ┃
+┡━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ Anthropic  │ ANTHROPIC_API_KEY  │ Configured │ credentials.json│ sk-ant-...4a9e│
+│ Gemini     │ GEMINI_API_KEY     │ Configured │ credentials.json│ AIzaSy...9b12 │
+│ Openai     │ OPENAI_API_KEY     │ Configured │ credentials.json│ sk-proj...7f88│
+│ Deepseek   │ DEEPSEEK_API_KEY   │  Not Set   │ missing        │ Not set       │
+│ Github     │ GITHUB_TOKEN       │ Configured │ environment    │ ghp_...d81a   │
+└────────────┴────────────────────┴────────────┴────────────────┴───────────────┘
+```
+
+---
+
+## 🚀 Quickstart & CLI Reference
+
+### 1. Installation
+
+Install directly from PyPI:
+```bash
+pip install patchproof
+```
+
+Or using `uv`:
+```bash
+uv tool install patchproof
+```
+
+Or from source:
+```bash
 git clone https://github.com/saahilpal/patchproof.git
 cd patchproof
-
-# Install all dependencies with uv
 uv sync --extra dev
 ```
 
-### 2. First-Time Setup & Diagnostics
-```bash
-# Run guided setup (provisions .env, policy.yaml, and verifies sandboxes)
-uv run patchproof setup
-
-# Run non-destructive diagnostic health check
-uv run patchproof doctor
-```
-
-```
-                🛡️ PatchProof System Diagnostics & Health Check                 
-┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Subsystem  ┃ Component              ┃ S… ┃ Details / Action                  ┃
-┡━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ Core       │ Python Version (>=     │ ✓  │ Python 3.12.13                    │
-│ Runtime    │ 3.11)                  │ P… │                                   │
-│ Core       │ uv Package Manager     │ ✓  │ Installed and found on PATH       │
-│ Runtime    │                        │ P… │                                   │
-│ Core       │ Git Version Control    │ ✓  │ Configured for user identity      │
-│ Runtime    │                        │ P… │                                   │
-│ Integrati… │ GitHub CLI (gh)        │ ✓  │ Authenticated via gh CLI keyring  │
-│ Integrati… │ Synapse AST Graph      │ ✓  │ Synap v2.4.1                      │
-│ Storage    │ Ephemeral Sandboxes    │ ✓  │ Writable: /tmp/patchproof-worksp… │
-│ Security   │ Policy Governance      │ ✓  │ Found: policy.yaml                │
-│ AI Gateway │ AI Model Providers     │ ✓  │ Anthropic / Gemini / OpenAI       │
-└────────────┴────────────────────────┴────┴───────────────────────────────────┘
-```
-
-### 3. Autonomous GitHub Issue Resolution
-Solve issues end-to-end: clone remote repository, reproduce failure, investigate root cause, synthesize anchored fix, verify against test oracle, and create a signed Pull Request on GitHub:
+### 2. Guided Setup & Health Checks
 
 ```bash
-uv run patchproof gh solve owner/repo#42
+# Bootstrap policy.yaml, workspace sandboxes, and .env template
+patchproof setup
+
+# Run comprehensive system diagnostics
+patchproof doctor
 ```
 
-Review an incoming Pull Request with anti-cheat checks & pinned test oracles:
+### 3. Autonomous GitHub Issue Solver
+
+Resolve GitHub issues end-to-end: fetch issue, reproduce failure, investigate AST call graph, synthesize verified repair, assert Level V1–V3 verification, and create a cryptographically signed Pull Request:
+
 ```bash
-uv run patchproof gh review owner/repo#105 --cmd "pytest -v"
+# Authenticate GitHub CLI or set GITHUB_TOKEN
+gh auth login
+
+# Run issue solver
+patchproof gh solve owner/repo#42
 ```
 
-### 4. Local Repository Repair & Inspection
+### 4. Review & Verify Incoming Pull Requests
+
+Audit incoming Pull Requests with anti-cheat AST analysis and pinned test oracles:
 ```bash
-# Run 9-stage loop on a local repository with diff export
-uv run patchproof run /path/to/repo --cmd "pytest -v tests/test_calc.py" --export-diff fix.diff
-
-# Inspect codebase AST symbols via Synapse/Standard provider
-uv run patchproof inspect symbols /path/to/repo add
-
-# View cryptographic audit trail
-uv run patchproof inspect journal
+patchproof gh review owner/repo#105 --cmd "pytest -v"
 ```
 
-### 5. Running the Test Suite
+### 5. Local Repository Repair
+
+Run the 9-stage loop on a local repository and export the verified patch diff:
 ```bash
-# Run full unit, integration, and loop evolution test suite (48 tests)
-uv run pytest -v
+patchproof repair /path/to/project --cmd "pytest -v tests/test_core.py" --export-diff fix.diff
+```
+
+### 6. Diagnose Mode (Zero-Token Triage)
+
+Reproduce and triage failures without applying code changes:
+```bash
+patchproof diagnose /path/to/project --cmd "pytest -v tests/test_core.py"
+```
+
+### 7. Evaluation & Synthetic Mutation Suite
+
+Benchmark repair reliability and calculate Wilson score statistical confidence:
+```bash
+# Run SWE-bench or custom benchmark arm
+patchproof eval benchmark --dataset swe_bench_lite.jsonl --arm patchproof_v1.1
+
+# Inject a synthetic, validated mutation to test agent detection
+patchproof eval inject /path/to/project --target src/calculator.py --cmd "pytest -v"
 ```
 
 ---
 
-## 📋 Epistemological Claim Ledger
+## 📋 Epistemological Claim Ledger Example
 
-Every diagnosis emitted by PatchProof is backed by an audited, tamper-evident Claim Ledger:
+Every repair emits a tamper-evident audit ledger embedded in the final Pull Request:
 
 ```markdown
 ## Epistemological Claim Ledger
 
 | Claim ID | Category | Confidence | Statement |
 | :--- | :--- | :--- | :--- |
-| `CLM-OBS-0` | `OBSERVED` | high | Test 'tests/test_calculator.py::test_add' failed with AssertionError: 2 - 3 == -1 != 5. |
-| `CLM-DER-0` | `DERIVED` | high | Symbol 'add' identified at calculator.py:1-2 via SynapseContextProvider. |
-| `CLM-INF-1` | `INFERRED` | high | Attempt 1 Hypothesis: Root cause resolved by adjusting return operator from - to + in calculator.py. |
+| `CLM-OBS-0` | `OBSERVED` | 1.00 | Test 'tests/test_calculator.py::test_add' failed with AssertionError: 2 - 3 == -1 != 5. |
+| `CLM-DER-0` | `DERIVED` | 1.00 | Symbol 'add' identified at src/calculator.py:1-4 via SynapseContextProvider. |
+| `CLM-INF-1` | `INFERRED` | 0.95 | Hypothesis 1: Operator mutated from '+' to '-'. Restoring '+' resolves failure. |
+| `CLM-OBS-1` | `OBSERVED` | 1.00 | Verification Level V3 achieved: Fail-to-Pass (1/1), Pass-to-Pass (48/48). |
 ```
 
 ---
@@ -223,7 +334,13 @@ Every diagnosis emitted by PatchProof is backed by an audited, tamper-evident Cl
 
 ---
 
+## 🤝 Ecosystem & Connected Projects
+
+- **[Synapse (`synap-git`)](https://github.com/saahilpal/synapse):** Deterministic Git-aware structural AST retrieval engine created by [@saahilpal](https://github.com/saahilpal). Provides PatchProof with sub-millisecond symbol resolution, bidirectional caller-callee graphs, and impacted test set computation.
+
+---
+
 ## 📜 License
 
 Licensed under the [Apache License, Version 2.0](LICENSE).  
-Copyright (c) 2026 PatchProof Core Team & Contributors.
+Copyright (c) 2026 Sahil Pal & PatchProof Contributors.

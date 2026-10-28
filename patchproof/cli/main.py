@@ -2,9 +2,14 @@
 
 import json
 import re
+import shutil
+import sqlite3
+import subprocess
+import sys
 from pathlib import Path
 
 import click
+from rich.table import Table
 
 from patchproof import __version__
 from patchproof.cli.setup import SetupManager
@@ -12,6 +17,7 @@ from patchproof.config import settings
 from patchproof.context.base import ContextProvider
 from patchproof.context.standard import StandardContextProvider
 from patchproof.context.synapse import SynapseContextProvider
+from patchproof.core.credentials import CredentialStore
 from patchproof.core.models import OutcomeResult, ProcessStatus, VerificationLevel
 from patchproof.eval.datasets import DatasetLoader
 from patchproof.eval.mutator import SyntheticMutator
@@ -66,6 +72,238 @@ def doctor() -> None:
 
     checks = SetupManager.run_diagnostics()
     SetupManager.render_diagnostics_table(checks)
+
+
+# ---------------------------------------------------------------------------
+# Authentication & Credentials Management (0600 Permissions)
+# ---------------------------------------------------------------------------
+
+@main.group()
+def auth() -> None:
+    """Manage local API keys and authentication credentials securely (0600 permissions)."""
+    pass
+
+
+@auth.command(name="login")
+@click.option(
+    "--provider",
+    "-p",
+    type=click.Choice(["anthropic", "gemini", "openai", "deepseek", "github"]),
+    help="Target provider to configure.",
+)
+def auth_login(provider: str | None) -> None:
+    """Interactively configure API keys with masked input stored in ~/.config/patchproof/credentials.json."""
+    PatchProofUI.print_banner()
+    console.print("[bold cyan]Secure API Key Credential Setup[/bold cyan]")
+    console.print("[dim]Keys are stored in ~/.config/patchproof/credentials.json with strict 0600 (owner-only) permissions.[/dim]\n")
+
+    store = CredentialStore()
+    providers_to_prompt = [provider] if provider else ["anthropic", "gemini", "openai", "deepseek", "github"]
+
+    labels = {
+        "anthropic": "Anthropic API Key (ANTHROPIC_API_KEY)",
+        "gemini": "Google Gemini API Key (GEMINI_API_KEY)",
+        "openai": "OpenAI API Key (OPENAI_API_KEY)",
+        "deepseek": "DeepSeek API Key (DEEPSEEK_API_KEY)",
+        "github": "GitHub Token (GITHUB_TOKEN or PAT)",
+    }
+
+    configured_count = 0
+    for p in providers_to_prompt:
+        existing = store.get_key(p)
+        status_hint = f" [dim](currently: {store.mask_key(existing)})[/dim]" if existing else ""
+        prompt_label = f"Enter {labels.get(p, p)}{status_hint}"
+
+        value = click.prompt(
+            prompt_label,
+            default="" if existing else "",
+            show_default=False,
+            hide_input=True,
+        )
+
+        if value and value.strip():
+            store.set_key(p, value.strip())
+            console.print(f"[bold green]✓ Saved {p} key:[/bold green] `{store.mask_key(value.strip())}`")
+            configured_count += 1
+        elif existing:
+            console.print(f"[dim]Retained existing {p} key.[/dim]")
+        else:
+            console.print(f"[dim]Skipped {p}.[/dim]")
+
+    console.print(f"\n[bold green]Credentials updated securely.[/bold green] Storage: `{store.file_path}` (mode 0600)")
+
+
+@auth.command(name="set-key")
+@click.argument("provider", type=click.Choice(["anthropic", "gemini", "openai", "deepseek", "github"]))
+@click.argument("key", required=False)
+def auth_set_key(provider: str, key: str | None) -> None:
+    """Set or update an API key for a single provider."""
+    store = CredentialStore()
+    if not key:
+        key = click.prompt(f"Enter API key for {provider.upper()}", hide_input=True)
+
+    if not key or not key.strip():
+        console.print("[bold red]Error:[/bold red] API key cannot be empty.")
+        return
+
+    store.set_key(provider, key.strip())
+    masked = store.mask_key(key.strip())
+    console.print(f"[bold green]✓ Successfully configured {provider}:[/bold green] `{masked}`")
+    console.print(f"[dim]Stored in {store.file_path} with 0600 permissions.[/dim]")
+
+
+@auth.command(name="status")
+def auth_status() -> None:
+    """Display configured credentials, their active source, and masked previews."""
+    PatchProofUI.print_banner()
+    store = CredentialStore()
+    status = store.get_status()
+
+    table = Table(title="🔑 PatchProof Authentication & Credential Store", title_style="bold cyan")
+    table.add_column("Provider", style="bold white", width=14)
+    table.add_column("Env Variable", style="dim", width=22)
+    table.add_column("Status", justify="center", width=14)
+    table.add_column("Source", style="cyan", width=18)
+    table.add_column("Masked Key", style="yellow", width=18)
+
+    for provider, data in status.items():
+        is_active = data["active"]
+        stat_display = "[bold green]Configured[/bold green]" if is_active else "[dim]Not Set[/dim]"
+        table.add_row(
+            provider.capitalize(),
+            data["env_var"],
+            stat_display,
+            data["source"],
+            data["masked"],
+        )
+
+    console.print(table)
+    console.print(f"\n[dim]Credentials file: {store.file_path} (mode 0600)[/dim]")
+
+
+@auth.command(name="logout")
+@click.argument("provider", required=False, type=click.Choice(["anthropic", "gemini", "openai", "deepseek", "github", "all"]))
+def auth_logout(provider: str | None) -> None:
+    """Remove stored credentials from ~/.config/patchproof/credentials.json."""
+    store = CredentialStore()
+    if not provider or provider == "all":
+        if click.confirm("Are you sure you want to remove ALL stored credentials?", default=False):
+            store.save_credentials({})
+            console.print("[bold green]✓ All stored credentials have been removed.[/bold green]")
+        else:
+            console.print("[dim]Aborted.[/dim]")
+    else:
+        if store.delete_key(provider):
+            console.print(f"[bold green]✓ Removed stored key for {provider}.[/bold green]")
+        else:
+            console.print(f"[yellow]No stored key found for {provider}.[/yellow]")
+
+
+# ---------------------------------------------------------------------------
+# Synapse Structural AST Graph Integration
+# ---------------------------------------------------------------------------
+
+@main.group()
+def synapse() -> None:
+    """Manage and inspect Synapse structural AST graph intelligence."""
+    pass
+
+
+@synapse.command(name="status")
+@click.argument("repo_path", type=click.Path(path_type=Path), default=Path("."))
+def synapse_status(repo_path: Path) -> None:
+    """Inspect Synapse AST index status, symbol database, and caller graph for a repo."""
+    PatchProofUI.print_banner()
+    provider = SynapseContextProvider(repo_path)
+
+    table = Table(title="⚡ Synapse Structural Intelligence Status", title_style="bold cyan")
+    table.add_column("Property", style="bold white", width=26)
+    table.add_column("Status / Value", style="cyan", width=46)
+
+    cli_status = f"[bold green]Installed ({provider.cli_bin})[/bold green]" if provider.is_cli_available() else "[bold yellow]Not Found on PATH[/bold yellow]"
+    table.add_row("Synapse CLI (`synap`)", cli_status)
+
+    if provider.is_synapse_indexed() and provider.db_path:
+        table.add_row("Database Index (`.synap/synap.db`)", f"[bold green]Found[/bold green] ({provider.db_path})")
+        try:
+            conn = sqlite3.connect(f"file:{provider.db_path}?mode=ro", uri=True)
+            cur = conn.cursor()
+            cur.execute("SELECT count(*) FROM symbols")
+            sym_count = cur.fetchone()[0]
+            cur.execute("SELECT count(*) FROM files")
+            file_count = cur.fetchone()[0]
+            cur.execute("SELECT count(*) FROM edges")
+            edge_count = cur.fetchone()[0]
+            conn.close()
+
+            table.add_row("Indexed Files", str(file_count))
+            table.add_row("Indexed Symbols (AST)", str(sym_count))
+            table.add_row("Call Graph Edges", str(edge_count))
+        except Exception as e:
+            table.add_row("DB Stats Error", str(e))
+    else:
+        table.add_row("Database Index (`.synap/synap.db`)", "[dim]Not Indexed in this workspace[/dim]")
+
+    console.print(table)
+    if not provider.is_cli_available():
+        console.print("\n[yellow]💡 Tip:[/yellow] Install Synapse to accelerate symbol search and reverse impact analysis:")
+        console.print("   [bold cyan]pip install synap-git[/bold cyan]  or  [bold cyan]uv tool install synap-git[/bold cyan]")
+        console.print("   Repository: [link=https://github.com/saahilpal/synapse]https://github.com/saahilpal/synapse[/link]")
+    elif not provider.is_synapse_indexed():
+        console.print("\n[yellow]💡 Tip:[/yellow] Index this repository to activate deep AST callgraphs:")
+        console.print(f"   [bold cyan]synap init && synap index[/bold cyan] (or run [bold cyan]patchproof synapse index {repo_path}[/bold cyan])")
+
+
+@synapse.command(name="install")
+def synapse_install() -> None:
+    """Guide or execute installation of the Synapse AST engine (synap-git)."""
+    PatchProofUI.print_banner()
+    console.print("[bold cyan]Installing Synapse Structural Retrieval Engine (by @saahilpal)...[/bold cyan]\n")
+    console.print("Synapse powers PatchProof's caller-callee call graph traversal and impacted test prediction.")
+    console.print("Repository: [bold cyan]https://github.com/saahilpal/synapse[/bold cyan]\n")
+
+    try:
+        console.print("Running [bold yellow]pip install synap-git[/bold yellow]...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "synap-git"], check=True, capture_output=True, text=True)
+        console.print("[bold green]✓ Synapse successfully installed![/bold green]")
+        console.print("Verify with: [cyan]synap --version[/cyan]")
+    except subprocess.CalledProcessError as e:
+        console.print(f"[bold red]Installation failed:[/bold red] {e.stderr or e.stdout}")
+        console.print("\nYou can install manually via:")
+        console.print("  [cyan]pip install synap-git[/cyan]")
+        console.print("  [cyan]uv tool install synap-git[/cyan]")
+
+
+@synapse.command(name="index")
+@click.argument("repo_path", type=click.Path(path_type=Path), default=Path("."))
+def synapse_index(repo_path: Path) -> None:
+    """Initialize and index a target repository using Synapse AST graph generator."""
+    PatchProofUI.print_banner()
+    synap_bin = shutil.which("synap")
+    if not synap_bin:
+        console.print("[bold red]Synapse CLI (`synap`) not found on PATH.[/bold red]")
+        console.print("Run [bold cyan]patchproof synapse install[/bold cyan] or [bold cyan]pip install synap-git[/bold cyan] first.")
+        return
+
+    target = repo_path.resolve()
+    console.print(f"Indexing target repository: [bold cyan]{target}[/bold cyan]")
+    try:
+        subprocess.run([synap_bin, "init", str(target)], check=False)
+        subprocess.run([synap_bin, "index", str(target)], check=True)
+        console.print("\n[bold green]✓ Repository successfully indexed by Synapse![/bold green]")
+        console.print(f"Index created at: `{target / '.synap' / 'synap.db'}`")
+    except subprocess.CalledProcessError as e:
+        console.print(f"[bold red]Indexing failed:[/bold red] {e}")
+
+
+@synapse.command(name="search")
+@click.argument("query", type=str)
+@click.option("--path", type=click.Path(path_type=Path), default=Path("."))
+def synapse_search(query: str, path: Path) -> None:
+    """Search for symbols, callers, and code elements via Synapse."""
+    provider = SynapseContextProvider(path)
+    result = provider.search_structural(query)
+    console.print(result)
 
 
 # ---------------------------------------------------------------------------

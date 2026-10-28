@@ -1,12 +1,12 @@
 """GitHub integration client wrapping the official GitHub CLI (gh) and REST API."""
 
 import json
-import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
+from patchproof.core.credentials import CredentialStore
 from patchproof.github.models import GitHubIssue, GitHubPullRequest
 
 
@@ -20,7 +20,7 @@ class GitHubClient:
 
     def __init__(self, token: str | None = None):
         self.cli_bin = shutil.which("gh")
-        self.token = token or os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        self.token = token or CredentialStore().get_key("github")
 
     def is_authenticated(self) -> bool:
         """Check if authenticated via gh CLI or token."""

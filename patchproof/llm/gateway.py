@@ -1,7 +1,6 @@
 """Role-tiered, multi-provider LLM Gateway with budget caps, egress sanitization, and structured outputs."""
 
 import json
-import os
 import re
 import time
 from typing import Any
@@ -9,6 +8,7 @@ from typing import Any
 import httpx
 
 from patchproof.config import settings
+from patchproof.core.credentials import CredentialStore
 from patchproof.llm.egress import EgressGate
 from patchproof.llm.schemas import FixerPlanOutput, ReviewerOutput
 
@@ -35,9 +35,10 @@ class LLMGateway:
     ):
         self.max_tokens = max_tokens or settings.max_tokens_total
         self.total_tokens_consumed = 0
-        self.anthropic_key = anthropic_key or os.environ.get("PATCHPROOF_ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
-        self.gemini_key = gemini_key or os.environ.get("PATCHPROOF_GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
-        self.openai_key = openai_key or os.environ.get("PATCHPROOF_OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
+        store = CredentialStore()
+        self.anthropic_key = anthropic_key or store.get_key("anthropic")
+        self.gemini_key = gemini_key or store.get_key("gemini")
+        self.openai_key = openai_key or store.get_key("openai")
 
     def has_active_provider(self) -> bool:
         """Check whether at least one real LLM provider API key is configured."""
