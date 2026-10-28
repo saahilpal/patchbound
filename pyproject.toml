@@ -24,6 +24,7 @@ dependencies = [
     "pyyaml>=6.0.1",
     "junitparser>=3.1.2",
     "gitpython>=3.1.43",
+    "httpx>=0.27.0",
 ]
 
 [project.optional-dependencies]

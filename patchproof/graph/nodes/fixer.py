@@ -1,10 +1,11 @@
-"""Stage 5: Fixer (Single Structured LLM Call / Adaptive Repair Synthesis)."""
+"""Stage 5: Fixer (Real LLM Call / Adaptive Repair Synthesis)."""
 
 from pathlib import Path
 from typing import Any
 
 from patchproof.core.models import AnchoredEdit, ProcessStatus
 from patchproof.graph.state import PatchProofState
+from patchproof.llm.gateway import LLMGateway
 
 
 def fixer_node(state: PatchProofState) -> dict[str, Any]:
@@ -15,14 +16,48 @@ def fixer_node(state: PatchProofState) -> dict[str, Any]:
     existing_edits = list(state.get("anchored_edits", []))
     repo_path = Path(str(state.get("repo_path", ".")))
     active_sig = state.get("active_failure_signature")
+    hypotheses = state.get("hypotheses", [])
 
     target_name = f2p[0] if f2p else (active_sig.test_id if active_sig else "target")
     repair_plan = f"Apply targeted fix for {target_name} (Attempt {attempt})."
 
-    # If edits were explicitly provided for this attempt, preserve them
     anchored_edits: list[AnchoredEdit] = []
 
-    # Adaptive loop: if attempt > 0 and previous attempt failed, evolve the edits
+    # 1. Attempt Real LLM Synthesis if an API key is configured
+    gateway = LLMGateway()
+    if gateway.has_active_provider() and attempt > 0:
+        system_prompt = (
+            "You are an expert systems software engineer synthesizing an exact minimal bug fix.\n"
+            "Return a strictly valid JSON object matching the FixerPlanOutput schema:\n"
+            "{\n"
+            '  "repair_plan": "Description of fix",\n'
+            '  "target_tests": ["test_id"],\n'
+            '  "anchored_edits": [\n'
+            '    {"file_path": "rel/path.py", "old_text": "exact snippet", "new_text": "replacement"}\n'
+            "  ]\n"
+            "}\n"
+            "Rules:\n"
+            "1. NEVER modify test files (tests/*, test_*.py, conftest.py).\n"
+            "2. Ensure old_text matches the target file character-for-character.\n"
+        )
+        user_prompt = (
+            f"Target Test: {target_name}\n"
+            f"Failure Message: {active_sig.normalized_message if active_sig else ''}\n"
+            f"Hypotheses:\n" + "\n".join(f"- {h}" for h in hypotheses) + "\n"
+        )
+        if failure_delta:
+            user_prompt += f"Previous Attempt Feedback: {failure_delta.delta_type} - {failure_delta.guidance}\n"
+
+        plan = gateway.synthesize_repair_plan(user_prompt, system_prompt)
+        if plan and plan.anchored_edits:
+            return {
+                "status": ProcessStatus.FIXING,
+                "repair_plan": plan.repair_plan,
+                "target_tests": plan.target_tests or f2p,
+                "anchored_edits": plan.anchored_edits,
+            }
+
+    # 2. Deterministic / Heuristic loop adaptation when running offline or without API keys
     if attempt > 0 and failure_delta:
         repair_plan = f"Evolved repair plan (Attempt {attempt}): Addressing {failure_delta.delta_type} ({failure_delta.guidance})."
 
@@ -31,7 +66,6 @@ def fixer_node(state: PatchProofState) -> dict[str, Any]:
             # Redirect fix from test file to actual implementation
             for edit in existing_edits:
                 if edit.file_path.startswith("tests/") or edit.file_path.startswith("test_"):
-                    # Find matching implementation file
                     impl_file = edit.file_path.replace("tests/test_", "").replace("test_", "")
                     candidate = repo_path / impl_file
                     if candidate.exists():
@@ -47,12 +81,10 @@ def fixer_node(state: PatchProofState) -> dict[str, Any]:
 
         # If previous edit was applied but test still failed (SAME_FAILURE)
         elif failure_delta.delta_type == "SAME_FAILURE":
-            # Evolve: if an alternative repair exists in state or can be derived
             alternative_edits = state.get("alternative_anchored_edits")
             if alternative_edits and isinstance(alternative_edits, list):
                 anchored_edits = alternative_edits
             else:
-                # Evolve existing edits by refining logic or inverting candidate operator
                 for edit in existing_edits:
                     old_t = edit.old_text
                     new_t = edit.new_text
