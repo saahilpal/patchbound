@@ -92,17 +92,40 @@ patchproof/
 
 ---
 
-## Quickstart (Development Setup)
+## Quickstart & CLI Commands
 
+### 1. First-Time Setup & Diagnostics
 ```bash
-# Clone and enter directory
-cd /path/to/patchproof
+# Run guided setup (initializes .env, policy.yaml, and checks system health)
+uv run patchproof setup
 
-# Create virtual environment and install in editable mode
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+# Run non-destructive system diagnostics
+uv run patchproof doctor
+```
 
-# Run tests
-pytest
+### 2. Autonomous GitHub Issue Resolution
+```bash
+# Solve an issue end-to-end: clone, reproduce, repair, verify, and open verified PR
+uv run patchproof gh solve owner/repo#42
+
+# Review an incoming PR with anti-cheat checks & pinned test oracles
+uv run patchproof gh review owner/repo#105 --cmd "pytest -v"
+```
+
+### 3. Local Repository Repair & Inspection
+```bash
+# Run full 9-stage repair loop with auto-approval and diff export
+uv run patchproof run /path/to/repo --cmd "pytest -v tests/test_target.py" --export-diff solution.diff
+
+# Inspect codebase AST symbols via Synapse/Standard provider
+uv run patchproof inspect symbols /path/to/repo add
+
+# View cryptographic audit journal
+uv run patchproof inspect journal
+```
+
+### 4. Running Verification Test Suite
+```bash
+# Execute full unit and integration test suite across all 48 test instances
+uv run pytest
 ```
