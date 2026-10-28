@@ -9,6 +9,8 @@ from patchproof.context.base import ContextProvider, SymbolLocation
 class StandardContextProvider(ContextProvider):
     """Baseline context provider using standard Unix and git tools."""
 
+    name: str = "StandardContextProvider"
+
     def __init__(self, workspace_path: Path):
         self.workspace_path = workspace_path.resolve()
 

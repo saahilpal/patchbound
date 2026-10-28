@@ -34,6 +34,14 @@ class EgressGate:
         return sanitized
 
     @classmethod
+    def contains_leak(cls, text: str) -> bool:
+        """Check if raw text contains any known secret patterns."""
+        for pattern, _ in cls.SECRET_PATTERNS:
+            if re.search(pattern, text, flags=re.IGNORECASE):
+                return True
+        return False
+
+    @classmethod
     def check_file_path(cls, file_path: str | Path) -> None:
         """Ensure file is not on the sensitive file denylist."""
         path_str = str(file_path).lower()

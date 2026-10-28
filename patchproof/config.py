@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # Security & Sandboxing
     sandbox_tier: str = Field(default="trusted-local", description="Sandbox tier: trusted-local, rootless-container, or microvm")
     enable_egress_filter: bool = Field(default=True, description="Scrub secrets and deny sensitive paths")
+    auto_approve: bool = Field(default=True, description="Auto-approve verified patches when policy passes")
+    audit_journal_path: Path = Field(default=Path(".patchproof_audit.jsonl"), description="Path to cryptographic audit journal")
+
 
 
 settings = Settings()

@@ -43,3 +43,18 @@ class AntiCheatChecker:
             raise PolicyViolation(
                 f"Anti-cheat violation: code stripped {old_asserts - new_asserts} assert statement(s)."
             )
+
+    @staticmethod
+    def check_banned_constructs(canonical_diff: str) -> None:
+        """Ensure no test bypass decorators or mocking cheats are added."""
+        added_lines = [
+            line[1:].strip()
+            for line in canonical_diff.splitlines()
+            if line.startswith("+") and not line.startswith("+++")
+        ]
+        for line in added_lines:
+            if re.search(r"\b(mock\.patch|unittest\.mock|pytest\.skip|pytest\.xfail)\b", line):
+                raise PolicyViolation(f"Anti-cheat violation: prohibited test bypass or mock added: '{line}'")
+            if re.search(r"\bsys\.exit\(0\)", line):
+                raise PolicyViolation(f"Anti-cheat violation: prohibited exit(0) bypass detected: '{line}'")
+

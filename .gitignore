@@ -36,6 +36,9 @@ ENV/
 .coverage
 htmlcov/
 .tox/
+.patchproof_audit.jsonl
+*.jsonl
+
 
 # Sandboxes & Workspaces
 /tmp/patchproof-workspaces/

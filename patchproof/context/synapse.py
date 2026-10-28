@@ -14,6 +14,8 @@ from patchproof.context.standard import StandardContextProvider
 class SynapseContextProvider(ContextProvider):
     """Adapter for Synapse structural graph intelligence, layered over standard primitives."""
 
+    name: str = "SynapseContextProvider"
+
     def __init__(
         self,
         workspace_path: Path,

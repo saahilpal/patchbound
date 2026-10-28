@@ -42,16 +42,19 @@ def check_verification_route(state: PatchProofState) -> str:
 
 def check_review_route(state: PatchProofState) -> str:
     """Route after blind review."""
+    attempt = int(state.get("attempt", 0))
+    max_attempts = int(state.get("max_attempts", 2))
     if state.get("review_status") == "approved":
         return "human_approval"
-    return "investigator"
+    if attempt < max_attempts:
+        return "investigator"
+    return "export_report"
 
 
 def check_approval_route(state: PatchProofState) -> str:
     """Route after human approval."""
-    if state.get("human_approved", False):
-        return "export_report"
-    return END
+    return "export_report"
+
 
 
 def create_patchproof_graph() -> StateGraph[PatchProofState, Any, Any, Any]:
@@ -92,13 +95,17 @@ def create_patchproof_graph() -> StateGraph[PatchProofState, Any, Any, Any]:
     workflow.add_conditional_edges(
         "review",
         check_review_route,
-        {"human_approval": "human_approval", "investigator": "investigator"},
+        {
+            "human_approval": "human_approval",
+            "investigator": "investigator",
+            "export_report": "export_report",
+        },
     )
 
     workflow.add_conditional_edges(
         "human_approval",
         check_approval_route,
-        {"export_report": "export_report", END: END},
+        {"export_report": "export_report"},
     )
 
     workflow.add_edge("export_report", END)

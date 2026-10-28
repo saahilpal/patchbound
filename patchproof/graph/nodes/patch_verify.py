@@ -23,12 +23,12 @@ def patch_verify_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 6: Apply edits, run anti-cheat and policy checks, restore oracle, and verify."""
     investigation_id = str(state.get("investigation_id", "inv-001"))
     attempt = int(state.get("attempt", 0))
-    workspace = settings.workspace_root / investigation_id / f"attempt-{attempt}"
     repo_path = Path(str(state.get("repo_path", ".")))
-    if not workspace.exists():
-        from patchproof.core.clone import CloneManager
-        clone_mgr = CloneManager(repo_path, settings.workspace_root)
-        workspace = clone_mgr.create_disposable_clone(investigation_id, attempt)
+
+    # Allocate a fresh, isolated workspace clone for this attempt
+    from patchproof.core.clone import CloneManager
+    clone_mgr = CloneManager(repo_path, settings.workspace_root)
+    workspace = clone_mgr.create_disposable_clone(investigation_id, attempt)
 
     edits = state.get("anchored_edits", [])
     raw_cmd = state.get("reproduce_cmd") or state.get("reproduce_command")

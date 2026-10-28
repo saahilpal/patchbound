@@ -1,11 +1,15 @@
 """Command-line interface for PatchProof v1.1."""
 
+import json
 from pathlib import Path
 
 import click
 
 from patchproof import __version__
 from patchproof.config import settings
+from patchproof.context.base import ContextProvider
+from patchproof.context.standard import StandardContextProvider
+from patchproof.context.synapse import SynapseContextProvider
 from patchproof.core.models import ProcessStatus
 from patchproof.eval.datasets import DatasetLoader
 from patchproof.eval.mutator import SyntheticMutator
@@ -56,7 +60,10 @@ def diagnose(repo_path: Path, cmd: str) -> None:
 @main.command()
 @click.argument("repo_path", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.option("--cmd", default="pytest -v", help="Command to reproduce the failure.")
-def repair(repo_path: Path, cmd: str) -> None:
+@click.option("--export-diff", type=click.Path(path_type=Path), default=None, help="File to export verified patch.")
+@click.option("--max-retries", default=settings.max_retries, type=int, help="Maximum repair retry attempts.")
+@click.option("--auto-approve/--no-auto-approve", default=True, help="Auto-approve verified patch when policy passes.")
+def repair(repo_path: Path, cmd: str, export_diff: Path | None, max_retries: int, auto_approve: bool) -> None:
     """Run full 9-stage pipeline: reproduction, investigation, repair, verification & approval."""
     PatchProofUI.print_banner()
     console.print(f"[bold cyan]Target Repository:[/bold cyan] {repo_path}")
@@ -72,7 +79,9 @@ def repair(repo_path: Path, cmd: str) -> None:
         "repo_path": str(repo_path),
         "reproduce_cmd": cmd.split(),
         "attempt": 0,
-        "max_attempts": settings.max_retries,
+        "max_attempts": max_retries,
+        "auto_approve": auto_approve,
+        "export_path": str(export_diff) if export_diff else None,
         "status": ProcessStatus.INITIALIZING,
     }
 
@@ -90,6 +99,57 @@ def repair(repo_path: Path, cmd: str) -> None:
     console.print(f"\n[bold green]Pipeline Terminated.[/bold green] Final Outcome: [bold cyan]{outcome}[/bold cyan]")
     if result.get("patch_digest"):
         console.print(f"[bold yellow]Verified Patch Digest:[/bold yellow] `{result.get('patch_digest')}`")
+    if result.get("approval_signature"):
+        console.print(f"[bold yellow]Approval Signature:[/bold yellow] `{result.get('approval_signature')}`")
+    if result.get("exported_patch_path"):
+        console.print(f"[bold green]Patch Exported To:[/bold green] `{result.get('exported_patch_path')}`")
+
+
+@main.command(name="run")
+@click.argument("repo_path", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--cmd", default="pytest -v", help="Command to reproduce the failure.")
+@click.option("--export-diff", type=click.Path(path_type=Path), default=None, help="File to export verified patch.")
+@click.pass_context
+def run_alias(ctx: click.Context, repo_path: Path, cmd: str, export_diff: Path | None) -> None:
+    """Alias for repair command."""
+    ctx.forward(repair)
+
+
+@main.group()
+def inspect() -> None:
+    """Inspect AST symbols, call graphs, or cryptographic audit logs."""
+    pass
+
+
+@inspect.command(name="symbols")
+@click.argument("repo_path", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.argument("query", type=str)
+def inspect_symbols(repo_path: Path, query: str) -> None:
+    """Look up symbol definition in repository using Synapse/Standard provider."""
+    provider: ContextProvider = SynapseContextProvider(repo_path) if (repo_path / ".synap" / "synap.db").exists() else StandardContextProvider(repo_path)
+    console.print(f"Using provider: [bold cyan]{provider.name}[/bold cyan]")
+    syms = provider.find_symbol_definitions(query)
+    if syms:
+        sym = syms[0]
+        console.print(f"[bold green]Found:[/bold green] `{sym.symbol_name}` ({sym.kind}) in [bold yellow]{sym.file_path}:{sym.line_start}-{sym.line_end}[/bold yellow]")
+    else:
+        console.print(f"[yellow]No symbol found matching '{query}'.[/yellow]")
+
+
+@inspect.command(name="journal")
+@click.option("--journal", type=click.Path(path_type=Path), default=settings.audit_journal_path, help="Path to audit journal.")
+def inspect_journal(journal: Path) -> None:
+    """Inspect the cryptographic hash-chained audit journal."""
+    if not journal.exists():
+        console.print(f"[yellow]No journal found at {journal}[/yellow]")
+        return
+
+    lines = journal.read_text(encoding="utf-8").splitlines()
+    console.print(f"[bold cyan]Audit Journal:[/bold cyan] {journal} ({len(lines)} records)\n")
+    for idx, line in enumerate(lines, 1):
+        record = json.loads(line)
+        console.print(f"[[bold cyan]#{idx}[/bold cyan]] [yellow]{record.get('event_type')}[/yellow] - Hash: `{record.get('entry_hash', '')[:16]}...`")
+        console.print(f"     Payload: {json.dumps(record.get('payload', {}))}")
 
 
 @main.group()

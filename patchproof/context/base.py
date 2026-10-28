@@ -16,6 +16,8 @@ class SymbolLocation(BaseModel):
 class ContextProvider(ABC):
     """Abstract interface for context retrieval engines (Standard vs Synapse)."""
 
+    name: str = "ContextProvider"
+
     @abstractmethod
     def read_file(self, rel_path: str, start_line: int | None = None, end_line: int | None = None) -> str:
         """Safely read lines from a file in the workspace."""

@@ -70,6 +70,7 @@ class PatchProofState(TypedDict, total=False):
     repair_plan: str
     target_tests: list[str]
     anchored_edits: list[AnchoredEdit]
+    alternative_anchored_edits: list[AnchoredEdit]
 
     # Verification (Stage 6)
     canonical_diff: str
@@ -82,9 +83,12 @@ class PatchProofState(TypedDict, total=False):
     review_notes: str
 
     # Human Gate (Stage 8)
+    auto_approve: bool
     human_approved: bool
     approval_signature: str | None
 
     # Final Export & Report (Stage 9)
     final_report_markdown: str
     exported_patch_path: str | None
+    export_path: str | None
+    feedback: str | None
