@@ -1,4 +1,4 @@
-# PatchProof v1.1 Engineering Roadmap & Build Order
+# PatchBound v1.1 Engineering Roadmap & Build Order
 
 > **Version:** 1.1.0  
 > **Target Release:** Q4 2026  
@@ -8,7 +8,7 @@
 
 ## 1. Guiding Principles & Strategy
 
-Building an automated program repair system is fraught with premature agent complexity. The highest technical risks in PatchProof reside in the **deterministic trust boundary**:
+Building an automated program repair system is fraught with premature agent complexity. The highest technical risks in PatchBound reside in the **deterministic trust boundary**:
 1. Sandbox isolation and reproducible test execution.
 2. Robust parsing and failure signature generation.
 3. Anchored patch application without whitespace/offset decay.
@@ -23,7 +23,7 @@ Therefore, our engineering roadmap strictly mandates: **Build the deterministic 
 
 ```mermaid
 gantt
-    title PatchProof v1.1 Implementation Phases
+    title PatchBound v1.1 Implementation Phases
     dateFormat  YYYY-MM-DD
     section Phase 1: Deterministic Spine
     Clone & Invariant Enforcer       :active, p1_1, 2026-11-01, 7d
@@ -51,46 +51,46 @@ gantt
 **Objective:** Execute the complete end-to-end graph on 3 reproducible fixtures using deterministic mock/recorded LLM outputs.
 
 - **Deliverables:**
-  - `patchproof.core.clone`: Local disposable clone engine with pre/post hash invariant verification.
-  - `patchproof.core.sandbox`: Two-phase sandbox interface (`Prepare` with mirror/lockfile cache; `Execute` with network/rlimit isolation).
-  - `patchproof.core.patcher`: Anchored edit parser and canonical `git diff` synthesis.
-  - `patchproof.core.digest`: Cryptographic patch digest generator: $\text{SHA-256}(\text{base\_tree} \parallel \text{canonical\_diff})$.
-  - `patchproof.core.policy`: Unified policy file loader (`policy.yaml`) checking paths, diff sizes, and command templates.
-  - `patchproof.verification.oracle`: Hash-based test & config restoration engine.
-  - `patchproof.verification.parsers`: Deterministic JUnit, Pytest, and Jest/Vitest structured log parsers.
-  - `patchproof.verification.levels`: Formal evaluator for levels V1, V2, and V3.
+  - `patchbound.core.clone`: Local disposable clone engine with pre/post hash invariant verification.
+  - `patchbound.core.sandbox`: Two-phase sandbox interface (`Prepare` with mirror/lockfile cache; `Execute` with network/rlimit isolation).
+  - `patchbound.core.patcher`: Anchored edit parser and canonical `git diff` synthesis.
+  - `patchbound.core.digest`: Cryptographic patch digest generator: $\text{SHA-256}(\text{base\_tree} \parallel \text{canonical\_diff})$.
+  - `patchbound.core.policy`: Unified policy file loader (`policy.yaml`) checking paths, diff sizes, and command templates.
+  - `patchbound.verification.oracle`: Hash-based test & config restoration engine.
+  - `patchbound.verification.parsers`: Deterministic JUnit, Pytest, and Jest/Vitest structured log parsers.
+  - `patchbound.verification.levels`: Formal evaluator for levels V1, V2, and V3.
   - **Spine Integration Test:** Verify 3 real failure fixtures (Python pytest bug, TypeScript vitest bug, syntax/linter failure) from clone $\to$ triage $\to$ mock fix $\to$ verification $\to$ export.
 
 ### Phase 2: Causal Investigation & Claim Ledger (Milestone: M2)
 **Objective:** Deliver high-confidence, interventional root-cause analysis without hallucinated citations.
 
 - **Deliverables:**
-  - `patchproof.ledger.experiment`: Scratchpad experiment runner for hypothesis testing (probe injection, hunk revert).
-  - `patchproof.ledger.claim`: Typed claim models (`observed`, `derived`, `inferred`, `assumed`).
-  - `patchproof.ledger.validator`: Cryptographic citation validator verifying that quoted lines and symbols exist at base tree commit.
-  - `patchproof.llm.gateway`: Role-tiered LLM gateway with hard token, cost, and timeout budgets.
-  - `patchproof.llm.recorder`: Golden file recording/playback harness for deterministic regression testing.
-  - `patchproof.graph.nodes.investigator`: The bounded LLM agent loop with read-only tools and scratch experiments.
+  - `patchbound.ledger.experiment`: Scratchpad experiment runner for hypothesis testing (probe injection, hunk revert).
+  - `patchbound.ledger.claim`: Typed claim models (`observed`, `derived`, `inferred`, `assumed`).
+  - `patchbound.ledger.validator`: Cryptographic citation validator verifying that quoted lines and symbols exist at base tree commit.
+  - `patchbound.llm.gateway`: Role-tiered LLM gateway with hard token, cost, and timeout budgets.
+  - `patchbound.llm.recorder`: Golden file recording/playback harness for deterministic regression testing.
+  - `patchbound.graph.nodes.investigator`: The bounded LLM agent loop with read-only tools and scratch experiments.
   - **Outcome:** System produces comprehensive, grounded **Diagnosis-Only Reports** for non-repairable and out-of-scope issues.
 
 ### Phase 3: The Repair & Adversarial Review Loop (Milestone: M3)
 **Objective:** Synthesize verified patches and subject them to blind counter-examination.
 
 - **Deliverables:**
-  - `patchproof.graph.nodes.fixer`: Single structured LLM call emitting repair plan + anchored edits.
-  - `patchproof.core.anti_cheat`: Deterministic static analyzer detecting assertion stripping, test skip flags, and lint ignores.
-  - `patchproof.graph.nodes.review`: Blind Reviewer evaluating canonical diff in isolated context and submitting executable probe tests.
-  - `patchproof.graph.nodes.human_approval`: LangGraph `interrupt()` node binding approval signature to `(patch_digest, verification_hash, policy_version)`.
+  - `patchbound.graph.nodes.fixer`: Single structured LLM call emitting repair plan + anchored edits.
+  - `patchbound.core.anti_cheat`: Deterministic static analyzer detecting assertion stripping, test skip flags, and lint ignores.
+  - `patchbound.graph.nodes.review`: Blind Reviewer evaluating canonical diff in isolated context and submitting executable probe tests.
+  - `patchbound.graph.nodes.human_approval`: LangGraph `interrupt()` node binding approval signature to `(patch_digest, verification_hash, policy_version)`.
   - Retry logic emitting failure signature deltas on failed verification (bounded to 2 retries).
 
 ### Phase 4: Context Providers, Evaluation & Production Hardening (Milestone: M4)
 **Objective:** Run rigorous benchmark evaluation and assess standard primitives vs Synapse context provider.
 
 - **Deliverables:**
-  - `patchproof.context.standard`: Baseline context provider (ripgrep, ctags, AST symbol lookup, git log).
-  - `patchproof.context.synapse`: Synapse adapter (CLI, MCP, or in-process) implementing the common context contract.
-  - `patchproof.audit.journal`: Hash-chained append-only event journal.
-  - `patchproof.audit.metrics`: OpenTelemetry exporter for NFR-10 metrics (latency, token cost, verification rate).
+  - `patchbound.context.standard`: Baseline context provider (ripgrep, ctags, AST symbol lookup, git log).
+  - `patchbound.context.synapse`: Synapse adapter (CLI, MCP, or in-process) implementing the common context contract.
+  - `patchbound.audit.journal`: Hash-chained append-only event journal.
+  - `patchbound.audit.metrics`: OpenTelemetry exporter for NFR-10 metrics (latency, token cost, verification rate).
   - Benchmark evaluation suite on SWE-bench / GitBug-Actions / private repo bug injections.
 
 ---
@@ -102,10 +102,10 @@ To maintain high engineering velocity and avoid scope creep, the following items
 | Deferred Capability | Justification | Future Target |
 | :--- | :--- | :--- |
 | **Parallel Candidate Patches** | Architecture supports 1 workspace per candidate; v1.1 ships with 1 linear candidate to optimize cost and token consumption. | v1.2 |
-| **GitHub Actions / Webhook Daemon** | PatchProof runs as a high-performance CLI / local engine first. Webhook ingestion is external plumbing. | v1.2 |
+| **GitHub Actions / Webhook Daemon** | PatchBound runs as a high-performance CLI / local engine first. Webhook ingestion is external plumbing. | v1.2 |
 | **Interactive Web UI** | Terminal UI (`rich` / CLI) and markdown/JSON reports provide superior visibility for developers. | v2.0 |
 | **Historical Bug Memory / Vector RAG** | In-context investigation and code analysis are far more accurate than fuzzy retrieval over stale bug databases. | v2.0 |
-| **Direct Branch Push / PR Merging** | Safety first: PatchProof emits an approved patch artifact and digest; downstream CI/CD handles repository pushes. | v1.2 |
+| **Direct Branch Push / PR Merging** | Safety first: PatchBound emits an approved patch artifact and digest; downstream CI/CD handles repository pushes. | v1.2 |
 
 ---
 

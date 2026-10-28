@@ -14,7 +14,7 @@ Fixes #
 Please confirm that your changes satisfy the following invariants:
 
 - [ ] **Deterministic Tests:** Added or updated unit/integration tests (`uv run pytest`) — all pass cleanly.
-- [ ] **Strict Typing:** `uv run mypy patchproof tests` passes with 0 errors (`mypy --strict`).
+- [ ] **Strict Typing:** `uv run mypy patchbound tests` passes with 0 errors (`mypy --strict`).
 - [ ] **Linter & Formatting:** `uv run ruff check .` and `uv run ruff format --check .` pass.
 - [ ] **Anti-Cheat Compliance:** No test skips (`@pytest.mark.skip`), assertion deletions, or artificial bypasses introduced.
 - [ ] **No Secret Leaks:** Verified zero secrets or tokens included in test fixtures, mocks, or logs.
@@ -22,7 +22,7 @@ Please confirm that your changes satisfy the following invariants:
 
 ---
 
-### 🚦 PatchProof Verification Level
+### 🚦 PatchBound Verification Level
 
 If this PR fixes a code defect, what assurance level was verified?
 - [ ] **Level V1 (Fail-to-Pass):** Target failing test reproduces in baseline and passes in target clone.

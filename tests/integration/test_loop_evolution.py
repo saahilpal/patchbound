@@ -5,22 +5,24 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from patchproof.cli.main import main
-from patchproof.core.models import (
+from patchbound.cli.main import main
+from patchbound.core.models import (
     AnchoredEdit,
     OutcomeResult,
     ProcessStatus,
     VerificationLevel,
 )
-from patchproof.graph.workflow import compile_patchproof_graph
+from patchbound.graph.workflow import compile_patchbound_graph
 
 
 def create_git_fixture(repo_dir: Path, files: dict[str, str]) -> Path:
     """Helper to initialize a real git repository with fixture files."""
     repo_dir.mkdir(parents=True, exist_ok=True)
     subprocess.run(["git", "init", "-b", "main"], cwd=repo_dir, check=True, capture_output=True)
-    subprocess.run(["git", "config", "user.name", "PatchProof Tester"], cwd=repo_dir, check=True)
-    subprocess.run(["git", "config", "user.email", "tester@patchproof.internal"], cwd=repo_dir, check=True)
+    subprocess.run(["git", "config", "user.name", "PatchBound Tester"], cwd=repo_dir, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "tester@patchbound.internal"], cwd=repo_dir, check=True
+    )
 
     for rel_path, content in files.items():
         file_path = repo_dir / rel_path
@@ -28,7 +30,12 @@ def create_git_fixture(repo_dir: Path, files: dict[str, str]) -> Path:
         file_path.write_text(content, encoding="utf-8")
 
     subprocess.run(["git", "add", "."], cwd=repo_dir, check=True, capture_output=True)
-    subprocess.run(["git", "commit", "-m", "Initial commit with failing test"], cwd=repo_dir, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "commit", "-m", "Initial commit with failing test"],
+        cwd=repo_dir,
+        check=True,
+        capture_output=True,
+    )
     return repo_dir
 
 
@@ -41,7 +48,7 @@ def test_multi_attempt_loop_evolution_and_recovery(tmp_path: Path) -> None:
     }
     repo_path = create_git_fixture(fixture_dir, files)
 
-    app = compile_patchproof_graph()
+    app = compile_patchbound_graph()
 
     # Attempt 0: Provide an incorrect edit (multiplication instead of addition)
     wrong_initial_edit = [
@@ -97,7 +104,7 @@ def test_loop_exhaustion_terminates_cleanly(tmp_path: Path) -> None:
     }
     repo_path = create_git_fixture(fixture_dir, files)
 
-    app = compile_patchproof_graph()
+    app = compile_patchbound_graph()
 
     # Provide an edit that keeps failing
     failing_edit = [
@@ -138,7 +145,9 @@ def test_cli_diagnose_and_repair_end_to_end(tmp_path: Path) -> None:
     runner = CliRunner()
 
     # 1. Test diagnose command
-    diag_res = runner.invoke(main, ["diagnose", str(repo_path), "--cmd", "pytest -v tests/test_calculator.py"])
+    diag_res = runner.invoke(
+        main, ["diagnose", str(repo_path), "--cmd", "pytest -v tests/test_calculator.py"]
+    )
     assert diag_res.exit_code == 0
     assert "Target Repository:" in diag_res.output
     assert "Diagnosis Complete." in diag_res.output

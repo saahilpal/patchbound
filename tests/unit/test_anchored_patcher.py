@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from patchproof.core.models import AnchoredEdit
-from patchproof.core.patcher import PatchApplicationError, Patcher
+from patchbound.core.models import AnchoredEdit
+from patchbound.core.patcher import PatchApplicationError, Patcher
 
 
 def test_anchored_edit_application(temp_workspace: Path) -> None:

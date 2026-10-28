@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "patchproof"
+name = "patchbound"
 version = "1.1.0"
 description = "Deterministic trust boundary and bounded AI repair engine for automated patch verification"
 readme = "README.md"
@@ -11,7 +11,7 @@ requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [
     { name = "Sahil Pal", email = "sahilpal.dev@gmail.com" },
-    { name = "PatchProof Core Team", email = "core@patchproof.dev" },
+    { name = "PatchBound Core Team", email = "core@patchbound.dev" },
 ]
 maintainers = [
     { name = "Sahil Pal", email = "sahilpal.dev@gmail.com" },
@@ -57,11 +57,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/saahilpal/patchproof"
-Documentation = "https://github.com/saahilpal/patchproof/blob/main/docs/PRD.md"
-Repository = "https://github.com/saahilpal/patchproof"
-Issues = "https://github.com/saahilpal/patchproof/issues"
-Changelog = "https://github.com/saahilpal/patchproof/releases"
+Homepage = "https://github.com/saahilpal/patchbound"
+Documentation = "https://github.com/saahilpal/patchbound/blob/main/docs/README.md"
+Repository = "https://github.com/saahilpal/patchbound"
+Issues = "https://github.com/saahilpal/patchbound/issues"
+Changelog = "https://github.com/saahilpal/patchbound/releases"
 
 [project.optional-dependencies]
 dev = [
@@ -74,7 +74,7 @@ dev = [
 ]
 
 [project.scripts]
-patchproof = "patchproof.cli.main:main"
+patchbound = "patchbound.cli.main:main"
 
 [tool.ruff]
 line-length = 100

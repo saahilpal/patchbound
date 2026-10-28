@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from patchproof.eval.mutator import SyntheticMutator
+from patchbound.eval.mutator import SyntheticMutator
 
 
 def test_generate_candidate_mutations(temp_workspace: Path) -> None:

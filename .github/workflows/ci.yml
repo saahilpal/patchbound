@@ -33,8 +33,35 @@ jobs:
         run: uv run ruff check .
 
       - name: Type check with mypy
-        run: uv run mypy patchproof tests
+        run: uv run mypy patchbound tests
 
       - name: Run test suite
         run: uv run pytest -v
 
+  package-smoke-test:
+    name: Package Build & Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Install wheel into isolated virtual environment
+        run: |
+          uv venv /tmp/smoke-env
+          uv pip install --python /tmp/smoke-env/bin/python dist/*.whl
+
+      - name: Smoke test CLI commands
+        run: |
+          /tmp/smoke-env/bin/patchbound --version
+          /tmp/smoke-env/bin/patchbound --help
+          /tmp/smoke-env/bin/patchbound doctor

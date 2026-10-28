@@ -9,21 +9,21 @@ Milestone M1 Deliverables:
 import subprocess
 from pathlib import Path
 
-from patchproof.core.models import (
+from patchbound.core.models import (
     AnchoredEdit,
     OutcomeResult,
     ProcessStatus,
     VerificationLevel,
 )
-from patchproof.graph.workflow import compile_patchproof_graph
+from patchbound.graph.workflow import compile_patchbound_graph
 
 
 def create_git_fixture(path: Path, files: dict[str, str]) -> Path:
     """Helper to initialize a git fixture repository with specific files."""
     path.mkdir(parents=True, exist_ok=True)
     subprocess.check_call(["git", "init"], cwd=path, stdout=subprocess.DEVNULL)
-    subprocess.check_call(["git", "config", "user.name", "PatchProof Tester"], cwd=path)
-    subprocess.check_call(["git", "config", "user.email", "tester@patchproof.dev"], cwd=path)
+    subprocess.check_call(["git", "config", "user.name", "PatchBound Tester"], cwd=path)
+    subprocess.check_call(["git", "config", "user.email", "tester@patchbound.dev"], cwd=path)
 
     for rel_path, content in files.items():
         file_path = path / rel_path
@@ -49,7 +49,7 @@ def test_spine_python_pytest_end_to_end(tmp_path: Path) -> None:
     repo_path = create_git_fixture(fixture_dir, files)
 
     # Compile the 9-stage LangGraph
-    app = compile_patchproof_graph()
+    app = compile_patchbound_graph()
 
     # Initial state with mock LLM fix for calculator
     mock_edits = [
@@ -87,7 +87,7 @@ def test_spine_python_pytest_end_to_end(tmp_path: Path) -> None:
 
     # Verify export report markdown
     report_md = result.get("final_report_markdown", "")
-    assert "# PatchProof Investigation & Verification Report" in report_md
+    assert "# PatchBound Investigation & Verification Report" in report_md
     assert result["patch_digest"] in report_md
 
 
@@ -115,7 +115,7 @@ def test_spine_jest_vitest_mock_fixture(tmp_path: Path) -> None:
     repo_path = create_git_fixture(fixture_dir, files)
     (repo_path / "run_tests.py").chmod(0o755)
 
-    app = compile_patchproof_graph()
+    app = compile_patchbound_graph()
 
     mock_edits = [
         AnchoredEdit(
@@ -153,7 +153,7 @@ def test_spine_policy_rejection_fixture(tmp_path: Path) -> None:
     }
     repo_path = create_git_fixture(fixture_dir, files)
 
-    app = compile_patchproof_graph()
+    app = compile_patchbound_graph()
 
     # Cheating edit: attempts to delete an assertion
     cheating_edits = [

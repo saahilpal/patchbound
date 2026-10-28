@@ -1,8 +1,8 @@
 """Unit tests for verification levels evaluator."""
 
-from patchproof.core.models import VerificationLevel
-from patchproof.verification.levels import VerificationEvaluator
-from patchproof.verification.parsers.base import ParsedReport
+from patchbound.core.models import VerificationLevel
+from patchbound.verification.levels import VerificationEvaluator
+from patchbound.verification.parsers.base import ParsedReport
 
 
 def test_level_v3_ci_clean() -> None:

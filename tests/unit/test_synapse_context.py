@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from patchproof.context.synapse import SynapseContextProvider
+from patchbound.context.synapse import SynapseContextProvider
 
 
 @pytest.mark.skipif(
@@ -50,12 +50,16 @@ def test_synapse_provider_with_synthetic_sqlite_index(tmp_path: Path) -> None:
     conn = sqlite3.connect(db_file)
     cur = conn.cursor()
     cur.execute("CREATE TABLE files (file_id INTEGER PRIMARY KEY, path TEXT);")
-    cur.execute("CREATE TABLE symbols (symbol_id INTEGER PRIMARY KEY, file_id INTEGER, name TEXT, kind TEXT, start_line INTEGER, end_line INTEGER);")
+    cur.execute(
+        "CREATE TABLE symbols (symbol_id INTEGER PRIMARY KEY, file_id INTEGER, name TEXT, kind TEXT, start_line INTEGER, end_line INTEGER);"
+    )
     cur.execute("CREATE TABLE edges (source_symbol INTEGER, target_symbol INTEGER, kind TEXT);")
 
     cur.execute("INSERT INTO files VALUES (1, 'src/auth.py'), (2, 'tests/test_auth.py');")
     cur.execute("INSERT INTO symbols VALUES (101, 1, 'verify_token', 'function', 10, 25);")
-    cur.execute("INSERT INTO symbols VALUES (102, 2, 'test_verify_token_valid', 'function', 5, 12);")
+    cur.execute(
+        "INSERT INTO symbols VALUES (102, 2, 'test_verify_token_valid', 'function', 5, 12);"
+    )
     cur.execute("INSERT INTO edges VALUES (102, 101, 'calls');")
     conn.commit()
     conn.close()
@@ -93,4 +97,3 @@ def test_synapse_provider_clean_fallback_on_unindexed_repo(temp_workspace: Path)
 
     matches = provider.grep_search("def add")
     assert len(matches) > 0
-

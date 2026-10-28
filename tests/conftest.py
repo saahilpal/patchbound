@@ -1,4 +1,4 @@
-"""Shared fixtures for PatchProof tests."""
+"""Shared fixtures for PatchBound tests."""
 
 from pathlib import Path
 
@@ -32,6 +32,8 @@ def temp_workspace(tmp_path: Path) -> Path:
     )
 
     subprocess.check_call(["git", "add", "."], cwd=repo_dir)
-    subprocess.check_call(["git", "commit", "-m", "Initial commit"], cwd=repo_dir, stdout=subprocess.DEVNULL)
+    subprocess.check_call(
+        ["git", "commit", "-m", "Initial commit"], cwd=repo_dir, stdout=subprocess.DEVNULL
+    )
 
     return repo_dir

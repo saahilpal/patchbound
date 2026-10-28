@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from patchproof.core.policy import PolicyEngine, PolicyViolation
-from patchproof.verification.oracle import PinnedOracle
+from patchbound.core.policy import PolicyEngine, PolicyViolation
+from patchbound.verification.oracle import PinnedOracle
 
 
 def test_pinned_oracle_restores_nested_test_file(tmp_path: Path) -> None:
@@ -15,7 +15,9 @@ def test_pinned_oracle_restores_nested_test_file(tmp_path: Path) -> None:
     repo_dir.mkdir(parents=True)
     subprocess.run(["git", "init", "-b", "main"], cwd=repo_dir, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Tester"], cwd=repo_dir, check=True)
-    subprocess.run(["git", "config", "user.email", "test@patchproof.internal"], cwd=repo_dir, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@patchbound.internal"], cwd=repo_dir, check=True
+    )
 
     test_file = repo_dir / "src" / "tests" / "test_math.py"
     test_file.parent.mkdir(parents=True)
@@ -42,7 +44,9 @@ def test_pinned_oracle_tampering_detection(tmp_path: Path) -> None:
     repo_dir.mkdir(parents=True)
     subprocess.run(["git", "init", "-b", "main"], cwd=repo_dir, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Tester"], cwd=repo_dir, check=True)
-    subprocess.run(["git", "config", "user.email", "test@patchproof.internal"], cwd=repo_dir, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@patchbound.internal"], cwd=repo_dir, check=True
+    )
 
     cfg = repo_dir / "pytest.ini"
     cfg.write_text("[pytest]\n", encoding="utf-8")
@@ -55,4 +59,3 @@ def test_pinned_oracle_tampering_detection(tmp_path: Path) -> None:
     oracle = PinnedOracle(repo_dir, policy_engine=PolicyEngine())
     with pytest.raises(PolicyViolation, match="Oracle tampering detected"):
         oracle.verify_no_test_diffs()
-

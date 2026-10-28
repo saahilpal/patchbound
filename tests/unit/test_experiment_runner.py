@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from patchproof.core.models import AnchoredEdit
-from patchproof.ledger.experiment import ExperimentRunner, ExperimentStatus
+from patchbound.core.models import AnchoredEdit
+from patchbound.ledger.experiment import ExperimentRunner, ExperimentStatus
 
 
 def test_experiment_supported_when_probe_passes(temp_workspace: Path) -> None:

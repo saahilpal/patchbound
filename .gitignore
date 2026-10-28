@@ -36,15 +36,19 @@ ENV/
 .coverage
 htmlcov/
 .tox/
-.patchproof_audit.jsonl
+.patchbound_audit.jsonl
 *.jsonl
 
 
 # Sandboxes & Workspaces
-/tmp/patchproof-workspaces/
-/tmp/patchproof-cas/
+/tmp/patchbound-workspaces/
+/tmp/patchbound-cas/
 
 # IDE & OS
 .DS_Store
 .idea/
 .vscode/
+.synap/
+.synapse/
+.synapse/*-wal
+.synapse/*-shm

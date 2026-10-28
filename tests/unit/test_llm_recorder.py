@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from patchproof.llm.recorder import LLMRecorder
+from patchbound.llm.recorder import LLMRecorder
 
 
 def test_recorder_record_and_playback(tmp_path: Path) -> None:

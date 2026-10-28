@@ -1,10 +1,10 @@
 """Unit tests for LangGraph 9-stage graph compilation."""
 
-from patchproof.graph.workflow import compile_patchproof_graph, create_patchproof_graph
+from patchbound.graph.workflow import compile_patchbound_graph, create_patchbound_graph
 
 
 def test_graph_structure() -> None:
-    workflow = create_patchproof_graph()
+    workflow = create_patchbound_graph()
     assert "snapshot_reproduce" in workflow.nodes
     assert "parse_triage" in workflow.nodes
     assert "repairability_gate" in workflow.nodes
@@ -17,5 +17,5 @@ def test_graph_structure() -> None:
 
 
 def test_graph_compilation() -> None:
-    app = compile_patchproof_graph()
+    app = compile_patchbound_graph()
     assert app is not None

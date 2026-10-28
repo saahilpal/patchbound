@@ -1,19 +1,19 @@
 """Unit tests for Stage 9 Export Report node outcome handling."""
 
-from patchproof.core.models import (
+from patchbound.core.models import (
     OutcomeResult,
     ProcessStatus,
     VerificationFlags,
     VerificationLevel,
     VerificationRecord,
 )
-from patchproof.graph.nodes.export_report import export_report_node
-from patchproof.graph.state import PatchProofState
+from patchbound.graph.nodes.export_report import export_report_node
+from patchbound.graph.state import PatchBoundState
 
 
 def test_export_report_preserves_explicit_diagnosis_only_outcome() -> None:
     """Verify that export_report_node preserves OutcomeResult.DIAGNOSIS_ONLY without overriding."""
-    state: PatchProofState = {
+    state: PatchBoundState = {
         "investigation_id": "inv-test-diag",
         "outcome": OutcomeResult.DIAGNOSIS_ONLY,
         "status": ProcessStatus.TERMINATED,
@@ -28,7 +28,7 @@ def test_export_report_preserves_explicit_diagnosis_only_outcome() -> None:
 
 def test_export_report_preserves_flaky_and_not_reproducible() -> None:
     """Verify that export_report_node respects flaky and not_reproducible classifications."""
-    state_flaky: PatchProofState = {
+    state_flaky: PatchBoundState = {
         "investigation_id": "inv-flaky",
         "reproduce_classification": "flaky",
         "attempt": 0,
@@ -37,7 +37,7 @@ def test_export_report_preserves_flaky_and_not_reproducible() -> None:
     res_flaky = export_report_node(state_flaky)
     assert res_flaky["outcome"] == OutcomeResult.FLAKY
 
-    state_not_repro: PatchProofState = {
+    state_not_repro: PatchBoundState = {
         "investigation_id": "inv-not-repro",
         "reproduce_classification": "not_reproducible",
         "attempt": 0,
@@ -56,7 +56,7 @@ def test_export_report_verified_exported_outcome() -> None:
         f2p_passed=["test_one"],
         total_executed=5,
     )
-    state: PatchProofState = {
+    state: PatchBoundState = {
         "investigation_id": "inv-verified",
         "verification_record": record,
         "human_approved": True,

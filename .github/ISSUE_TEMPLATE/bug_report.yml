@@ -1,5 +1,5 @@
 name: "🐛 Bug Report"
-description: "Report a bug or unexpected behavior in PatchProof"
+description: "Report a bug or unexpected behavior in PatchBound"
 title: "[Bug]: "
 labels: ["bug", "triage"]
 body:
@@ -21,7 +21,7 @@ body:
       label: "Steps to Reproduce"
       description: "Deterministic steps to reproduce the behavior."
       placeholder: |
-        1. Run 'patchproof repair ...'
+        1. Run 'patchbound repair ...'
         2. With options '--cmd ...'
         3. See error ...
     validations:
@@ -37,12 +37,12 @@ body:
     id: environment
     attributes:
       label: "Environment Information"
-      description: "Please run `patchproof doctor` and paste the output here."
+      description: "Please run `patchbound doctor` and paste the output here."
       render: shell
       placeholder: |
         Python version:
         OS (macOS / Linux / Windows):
-        PatchProof version:
+        PatchBound version:
     validations:
       required: false
   - type: textarea

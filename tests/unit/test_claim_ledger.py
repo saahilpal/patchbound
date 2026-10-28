@@ -5,16 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from patchproof.ledger.claim import ClaimItem, ClaimType, CodeCitation
-from patchproof.ledger.validator import CitationFabricationError, CitationValidator
+from patchbound.ledger.claim import ClaimItem, ClaimType, CodeCitation
+from patchbound.ledger.validator import CitationFabricationError, CitationValidator
 
 
 def test_valid_citation_passes_validation(temp_workspace: Path) -> None:
     # Get current commit hash (tree hash)
-    commit_hash = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=temp_workspace, text=True)
-        .strip()
-    )
+    commit_hash = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=temp_workspace, text=True
+    ).strip()
 
     # In temp_workspace, calculator.py line 2 has: "    return a - b  # Bug: minus instead of plus"
     citation = CodeCitation(
@@ -38,10 +37,9 @@ def test_valid_citation_passes_validation(temp_workspace: Path) -> None:
 
 
 def test_fabricated_file_path_raises_error(temp_workspace: Path) -> None:
-    commit_hash = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=temp_workspace, text=True)
-        .strip()
-    )
+    commit_hash = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=temp_workspace, text=True
+    ).strip()
 
     fabricated_citation = CodeCitation(
         file_path="non_existent_module.py",
@@ -64,10 +62,9 @@ def test_fabricated_file_path_raises_error(temp_workspace: Path) -> None:
 
 
 def test_fabricated_quote_raises_error(temp_workspace: Path) -> None:
-    commit_hash = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=temp_workspace, text=True)
-        .strip()
-    )
+    commit_hash = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=temp_workspace, text=True
+    ).strip()
 
     # Valid file but quote does not match lines
     hallucinated_quote = CodeCitation(

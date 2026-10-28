@@ -2,7 +2,7 @@
 
 import pytest
 
-from patchproof.core.policy import PolicyEngine, PolicyViolation
+from patchbound.core.policy import PolicyEngine, PolicyViolation
 
 
 def test_protected_path_rejection() -> None:

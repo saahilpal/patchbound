@@ -2,8 +2,8 @@
 
 from unittest.mock import patch
 
-from patchproof.github.client import GitHubClient
-from patchproof.github.models import GitHubIssue
+from patchbound.github.client import GitHubClient
+from patchbound.github.models import GitHubIssue
 
 
 def test_github_issue_extracts_reproduction_hints() -> None:
@@ -36,7 +36,7 @@ def test_format_pr_body_includes_audit_signatures() -> None:
         approval_signature="b" * 64,
         claims_markdown="| `CLM-001` | `OBSERVED` | high | Test failed |",
     )
-    assert "## 🛡️ PatchProof Automated Verified Repair" in body
+    assert "## 🛡️ PatchBound Automated Verified Repair" in body
     assert "> **Resolves:** #42" in body
     assert f"- **Patch Digest (SHA-256):** `{'a' * 64}`" in body
     assert f"- **Governance Signature:** `{'b' * 64}`" in body

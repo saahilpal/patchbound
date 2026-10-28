@@ -1,1 +1,1 @@
-"""Test suite for PatchProof."""
+"""Test suite for PatchBound."""

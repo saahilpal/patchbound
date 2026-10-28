@@ -1,12 +1,12 @@
 name: "✨ Feature Request"
-description: "Suggest a new idea, capability, or architectural enhancement for PatchProof"
+description: "Suggest a new idea, capability, or architectural enhancement for PatchBound"
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        We love new ideas! Please describe the use-case and why this aligns with PatchProof's deterministic trust boundary principles.
+        We love new ideas! Please describe the use-case and why this aligns with PatchBound's deterministic trust boundary principles.
   - type: textarea
     id: problem
     attributes:

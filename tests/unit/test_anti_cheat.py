@@ -2,8 +2,8 @@
 
 import pytest
 
-from patchproof.core.anti_cheat import AntiCheatChecker
-from patchproof.core.policy import PolicyViolation
+from patchbound.core.anti_cheat import AntiCheatChecker
+from patchbound.core.policy import PolicyViolation
 
 
 def test_anti_cheat_detects_assert_deletion() -> None:

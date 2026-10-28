@@ -1,7 +1,7 @@
 """Unit tests for test report parsers (pytest and Jest/Vitest)."""
 
-from patchproof.verification.parsers.jest_parser import JestVitestParser
-from patchproof.verification.parsers.pytest_parser import PytestParser
+from patchbound.verification.parsers.jest_parser import JestVitestParser
+from patchbound.verification.parsers.pytest_parser import PytestParser
 
 
 def test_jest_parser_from_stdout_json() -> None:
@@ -81,4 +81,3 @@ FAILED tests/test_calculator.py::test_subtract - AssertionError: assert -1 == 3
     assert sig.top_frame is not None
     assert sig.top_frame.file_path == "tests/test_calculator.py"
     assert sig.top_frame.line_number == 12
-

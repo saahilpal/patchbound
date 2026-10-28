@@ -1,6 +1,6 @@
-# Getting Support for PatchProof
+# Getting Support for PatchBound
 
-Welcome to the PatchProof community! Here are the best ways to get support, ask questions, or connect with the maintainers and community:
+Welcome to the PatchBound community! Here are the best ways to get support, ask questions, or connect with the maintainers and community:
 
 ---
 
@@ -21,15 +21,15 @@ Before opening an issue or discussion, check our comprehensive technical specifi
 
 ## 💬 Community & Discussions
 
-- **GitHub Discussions:** Join the conversation on [Discussions](https://github.com/saahilpal/patchproof/discussions) for general questions, setup troubleshooting, and feature ideas.
+- **GitHub Discussions:** Join the conversation on [Discussions](https://github.com/saahilpal/patchbound/discussions) for general questions, setup troubleshooting, and feature ideas.
 - **Synapse AST Integration:** For issues with the AST graph or `synap-git`, visit the [Synapse Repository](https://github.com/saahilpal/synapse).
 
 ---
 
 ## 🐛 Bug Reports & Feature Requests
 
-- **Bug Reports:** If you found a bug, please check [Existing Issues](https://github.com/saahilpal/patchproof/issues) first. If it hasn't been reported, open a [Bug Report](https://github.com/saahilpal/patchproof/issues/new?template=bug_report.yml).
-- **Feature Requests:** Share your enhancement ideas via a [Feature Request](https://github.com/saahilpal/patchproof/issues/new?template=feature_request.yml).
+- **Bug Reports:** If you found a bug, please check [Existing Issues](https://github.com/saahilpal/patchbound/issues) first. If it hasn't been reported, open a [Bug Report](https://github.com/saahilpal/patchbound/issues/new?template=bug_report.yml).
+- **Feature Requests:** Share your enhancement ideas via a [Feature Request](https://github.com/saahilpal/patchbound/issues/new?template=feature_request.yml).
 
 ---
 

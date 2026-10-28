@@ -1,20 +1,20 @@
-# Contributing to PatchProof
+# Contributing to PatchBound
 
-First off, thank you for considering contributing to **PatchProof**! 🎉
+First off, thank you for considering contributing to **PatchBound**! 🎉
 
-PatchProof is an open-source, deterministic trust boundary and bounded AI repair engine designed for mission-critical software verification. We welcome contributions from developers, researchers, and AI safety engineers.
+PatchBound is an open-source, deterministic trust boundary and bounded AI repair engine designed for mission-critical software verification. We welcome contributions from developers, researchers, and AI safety engineers.
 
 ---
 
 ## 🧭 Code of Conduct
 
-This project and everyone participating in it is governed by the [PatchProof Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project and everyone participating in it is governed by the [PatchBound Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ---
 
 ## 🛠️ Development Setup
 
-PatchProof uses [`uv`](https://github.com/astral-sh/uv) for fast, deterministic, reproducible dependency management and packaging.
+PatchBound uses [`uv`](https://github.com/astral-sh/uv) for fast, deterministic, reproducible dependency management and packaging.
 
 ### Prerequisites
 
@@ -26,21 +26,21 @@ PatchProof uses [`uv`](https://github.com/astral-sh/uv) for fast, deterministic,
 
 ```bash
 # 1. Clone your fork or the repository
-git clone https://github.com/saahilpal/patchproof.git
-cd patchproof
+git clone https://github.com/saahilpal/patchbound.git
+cd patchbound
 
 # 2. Sync virtual environment and development dependencies
 uv sync --extra dev
 
 # 3. Verify setup
-uv run patchproof doctor
+uv run patchbound doctor
 ```
 
 ---
 
 ## 🧪 Testing & Quality Invariants
 
-PatchProof enforces strict quality and architectural invariants. Pull requests must satisfy all of the following checks before merging:
+PatchBound enforces strict quality and architectural invariants. Pull requests must satisfy all of the following checks before merging:
 
 ### 1. Unit & Integration Tests
 
@@ -52,7 +52,7 @@ uv run pytest
 ### 2. Strict Type Checking (Mypy)
 
 ```bash
-uv run mypy patchproof tests
+uv run mypy patchbound tests
 ```
 *Target: Zero type errors across all source files under `mypy --strict`.*
 
@@ -68,7 +68,7 @@ uv run ruff format --check .
 
 ## 🏛️ Architectural Doctrine & Principles
 
-When submitting code to PatchProof, please adhere to our first-principles design rules:
+When submitting code to PatchBound, please adhere to our first-principles design rules:
 
 1. **Thick Deterministic Spine vs. Thin Probabilistic Leaf:**
    - The LLM is an untrusted leaf node.
@@ -78,7 +78,7 @@ When submitting code to PatchProof, please adhere to our first-principles design
 3. **Pinned Test Oracles:**
    - Test suites and test configurations must never be modified by repair agents. All tests are restored via `git checkout -- tests/` before differential verification.
 4. **Epistemological Claim Grounding:**
-   - Every claim emitted by PatchProof must be tagged as `OBSERVED`, `DERIVED`, `INFERRED`, or `ASSUMED`.
+   - Every claim emitted by PatchBound must be tagged as `OBSERVED`, `DERIVED`, `INFERRED`, or `ASSUMED`.
 5. **No Token Waste:**
    - Short-circuit early on unreproducible or out-of-scope failures.
 
@@ -89,7 +89,7 @@ When submitting code to PatchProof, please adhere to our first-principles design
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
 - `feat:` A new feature or capability (e.g. `feat(auth): add biometric keyring backend`)
-- `fix:` A bug fix in PatchProof (e.g. `fix(sandbox): preserve file execution bits on hardlink clone`)
+- `fix:` A bug fix in PatchBound (e.g. `fix(sandbox): preserve file execution bits on hardlink clone`)
 - `docs:` Documentation updates (e.g. `docs(readme): expand synapse integration guide`)
 - `test:` Adding or refactoring tests
 - `refactor:` Code restructuring without functional alterations
@@ -107,7 +107,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 3. **Verify locally:**
    ```bash
    uv run ruff check .
-   uv run mypy patchproof tests
+   uv run mypy patchbound tests
    uv run pytest
    ```
 4. **Push to your fork** and submit a Pull Request targeting `main`.
@@ -120,5 +120,5 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 
 ## 💬 Getting Help
 
-- Join our [GitHub Discussions](https://github.com/saahilpal/patchproof/discussions).
+- Join our [GitHub Discussions](https://github.com/saahilpal/patchbound/discussions).
 - Check our comprehensive documentation in the [`docs/`](../docs/) directory.

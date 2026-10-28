@@ -1,6 +1,6 @@
 """Unit tests for evaluation metrics and statistical calculations."""
 
-from patchproof.eval.metrics import EvalCalculator
+from patchbound.eval.metrics import EvalCalculator
 
 
 def test_wilson_score_interval() -> None:
@@ -17,10 +17,30 @@ def test_wilson_score_interval() -> None:
 
 def test_compute_summary_false_verified_rate() -> None:
     results = [
-        {"verification_level": "V3", "held_out_failed": False, "duration_seconds": 10.0, "cost_usd": 0.05},
-        {"verification_level": "V3", "held_out_failed": False, "duration_seconds": 12.0, "cost_usd": 0.05},
-        {"verification_level": "V3", "held_out_failed": True, "duration_seconds": 15.0, "cost_usd": 0.05},  # False-verified!
-        {"verification_level": "V0", "held_out_failed": False, "duration_seconds": 8.0, "cost_usd": 0.02},
+        {
+            "verification_level": "V3",
+            "held_out_failed": False,
+            "duration_seconds": 10.0,
+            "cost_usd": 0.05,
+        },
+        {
+            "verification_level": "V3",
+            "held_out_failed": False,
+            "duration_seconds": 12.0,
+            "cost_usd": 0.05,
+        },
+        {
+            "verification_level": "V3",
+            "held_out_failed": True,
+            "duration_seconds": 15.0,
+            "cost_usd": 0.05,
+        },  # False-verified!
+        {
+            "verification_level": "V0",
+            "held_out_failed": False,
+            "duration_seconds": 8.0,
+            "cost_usd": 0.02,
+        },
     ]
 
     summary = EvalCalculator.compute_summary("test-arm", results)
@@ -38,8 +58,16 @@ def test_abstention_metrics() -> None:
     results = [
         {"outcome": "diagnosis_only", "expected_unrepairable": True, "cost_usd": 0.01},
         {"outcome": "flaky", "expected_unrepairable": True, "cost_usd": 0.01},
-        {"outcome": "not_reproducible", "expected_unrepairable": False, "cost_usd": 0.01},  # false decline
-        {"outcome": "verified_exported", "expected_unrepairable": True, "cost_usd": 0.05},  # false attempt
+        {
+            "outcome": "not_reproducible",
+            "expected_unrepairable": False,
+            "cost_usd": 0.01,
+        },  # false decline
+        {
+            "outcome": "verified_exported",
+            "expected_unrepairable": True,
+            "cost_usd": 0.05,
+        },  # false attempt
     ]
 
     summary = EvalCalculator.compute_summary("test-arm", results)

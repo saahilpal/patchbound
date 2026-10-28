@@ -1,10 +1,10 @@
-# PatchProof v1.1 Product Requirements Document (PRD)
+# PatchBound v1.1 Product Requirements Document (PRD)
 
-> **Product Name:** PatchProof  
+> **Product Name:** PatchBound  
 > **Version:** 1.1.0  
 > **Target Release:** Q4 2026  
 > **Status:** Approved / Active Specification  
-> **Author:** PatchProof Core Architecture & Engineering Team  
+> **Author:** PatchBound Core Architecture & Engineering Team  
 > **Audience:** Core Engineers, Security Architects, Platform Leads, Evaluators  
 
 ---
@@ -17,7 +17,7 @@ Automated Program Repair (APR) systems powered by Large Language Models (LLMs) r
 3. **Hallucinated Citations:** When diagnosing root causes, unconstrained models cite nonexistent source files, hallucinated symbol definitions, and fictitious line ranges.
 4. **False-Verified Regressions:** Patches claim success after passing a localized unit test while silently breaking downstream components or held-out test suites.
 
-**PatchProof v1.1 inverts this paradigm.** It introduces a **thick deterministic trust boundary** wrapped around **three strictly bounded LLM roles**:
+**PatchBound v1.1 inverts this paradigm.** It introduces a **thick deterministic trust boundary** wrapped around **three strictly bounded LLM roles**:
 - **Investigator (Single Agent Loop):** Employs read-only tools and interventional scratchpad experiments to produce a verifiable, epistemologically typed **Claim Ledger**.
 - **Fixer (Single Structured Call):** Emits an atomic repair plan and exact anchored edits without conversational iteration.
 - **Blind Reviewer (Adversarial Audit Call):** Evaluates candidate diffs in clean context without exposure to the fixer's narrative, running probe tests and checking anti-cheat invariants.
@@ -31,7 +31,7 @@ $$\text{PatchDigest} = \text{SHA-256}(\text{BaseTreeCommit} \parallel \text{Cano
 ## 2. Problem Statement & Motivation
 
 ### 2.1 The Multi-Agent Failure Mode
-Early APR architectures (including PatchProof v1.0 prototypes) treated software repair as a conversational consensus problem among specialized agents (Triage Agent $\to$ Search Agent $\to$ Hypothesis Agent $\to$ Coder Agent $\to$ Reviewer Agent). In practice:
+Early APR architectures (including PatchBound v1.0 prototypes) treated software repair as a conversational consensus problem among specialized agents (Triage Agent $\to$ Search Agent $\to$ Hypothesis Agent $\to$ Coder Agent $\to$ Reviewer Agent). In practice:
 - **Token Velocity Inflation:** Conversations exceeded $250{,}000$ tokens per bug without converging.
 - **Host Contamination:** LLM-generated bash commands polluted local file systems, left orphaned background processes, and mutated host git branches.
 - **Flaky Conflation:** Systems spent dozens of iterations attempting to repair non-deterministic or unparseable test failures that were fundamentally unrepairable.
@@ -72,7 +72,7 @@ $$FVR = \frac{\text{Patches Verified at V1-V3 that Fail Held-Out Evaluation Suit
 ### 4.1 Personas
 1. **Core Software Engineer (Local Developer):**
    - *Need:* Rapidly diagnose and propose fixes for localized test regressions without manual context gathering or debugging loops.
-   - *Workflow:* Runs `patchproof diagnose` or `patchproof repair` from the terminal; inspects rich terminal UI diffs and verification badges.
+   - *Workflow:* Runs `patchbound diagnose` or `patchbound repair` from the terminal; inspects rich terminal UI diffs and verification badges.
 2. **CI/CD Platform & Release Engineer:**
    - *Need:* Automated headless triage in CI workflows; runs unattended benchmarks on pull requests.
    - *Workflow:* Integrates headless runner, ingests structured JSON audit logs, and gates PR approval on cryptographic verification hashes.
@@ -86,7 +86,7 @@ $$FVR = \frac{\text{Patches Verified at V1-V3 that Fail Held-Out Evaluation Suit
 journey
     title Developer Experience: From Broken Test to Verified Patch
     section Reproduction
-      Run patchproof repair --cmd "pytest": 5: Developer
+      Run patchbound repair --cmd "pytest": 5: Developer
       Create disposable hardlink clone: 5: Deterministic Spine
       Verify host tree integrity: 5: Deterministic Spine
       Execute reproduction 3x (Flake Check): 5: Deterministic Spine
@@ -258,7 +258,7 @@ classDiagram
 
 ## 8. Benchmark Evaluation & Statistical Validation
 
-To empirically validate performance, PatchProof v1.1 embeds a statistical evaluation framework:
+To empirically validate performance, PatchBound v1.1 embeds a statistical evaluation framework:
 1. **Paired-Arm Evaluation (`BenchmarkRunner`):** Every benchmark dataset is evaluated across comparative arms (`standard-context` vs `synapse-context`, `unbounded-agent` vs `deterministic-spine`) against the exact same commit and environment seed.
 2. **Synthetic Bug Mutator (`SyntheticMutator`):** Automatically injects AST mutations (operator swaps, off-by-one boundary flips, boolean inversion) into clean codebases, runs tests to verify test failure flipping, and measures system recovery rates.
 3. **Statistical Confidence:** All metric summaries calculate 95% confidence intervals using the Wilson score interval:
@@ -271,7 +271,7 @@ $$w = \frac{\hat{p} + \frac{z^2}{2n} \pm z \sqrt{\frac{\hat{p}(1-\hat{p})}{n} + 
 
 ```mermaid
 gantt
-    title PatchProof v1.1 Build & Release Schedule
+    title PatchBound v1.1 Build & Release Schedule
     dateFormat  YYYY-MM-DD
     section Phase 1: Deterministic Spine
     Clone & Invariant Enforcer       :done, p1_1, 2026-10-01, 7d
@@ -305,8 +305,8 @@ To maintain high engineering velocity and prevent architectural scope creep, the
 | Deferred Capability | Justification | Target Milestone |
 | :--- | :--- | :--- |
 | **Parallel Candidate Branches** | v1.1 evaluates linear candidates sequentially with failure deltas to conserve token budgets. | v1.2 |
-| **GitHub Actions / Webhook Daemon** | PatchProof is designed as an engine / CLI first. Webhook ingestion is external plumbing. | v1.2 |
-| **Direct Git Push / PR Merging** | Safety first: PatchProof emits an approved patch artifact and digest; downstream CI handles repository pushes. | v1.2 |
+| **GitHub Actions / Webhook Daemon** | PatchBound is designed as an engine / CLI first. Webhook ingestion is external plumbing. | v1.2 |
+| **Direct Git Push / PR Merging** | Safety first: PatchBound emits an approved patch artifact and digest; downstream CI handles repository pushes. | v1.2 |
 | **Interactive Web UI** | Rich terminal UI (`rich` / CLI) and audited markdown reports provide superior developer transparency. | v2.0 |
 | **Historical Bug Memory / Vector RAG** | In-context causal investigation and AST symbol navigation are vastly more accurate than fuzzy retrieval over stale bug databases. | v2.0 |
 

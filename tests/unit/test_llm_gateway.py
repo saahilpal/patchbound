@@ -2,8 +2,8 @@
 
 import pytest
 
-from patchproof.llm.egress import EgressGate
-from patchproof.llm.gateway import BudgetExceededError, LLMGateway
+from patchbound.llm.egress import EgressGate
+from patchbound.llm.gateway import BudgetExceededError, LLMGateway
 
 
 def test_egress_gate_sanitizes_secrets() -> None:
