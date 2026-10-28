@@ -1,0 +1,53 @@
+name: "🐛 Bug Report"
+description: "Report a bug or unexpected behavior in PatchProof"
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please provide as much detail as possible to help us reproduce and resolve the defect deterministically.
+  - type: textarea
+    id: description
+    attributes:
+      label: "Bug Description"
+      description: "A clear and concise description of what the bug is."
+      placeholder: "Describe what happened..."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Deterministic steps to reproduce the behavior."
+      placeholder: |
+        1. Run 'patchproof repair ...'
+        2. With options '--cmd ...'
+        3. See error ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected Behavior"
+      description: "What did you expect to happen?"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment Information"
+      description: "Please run `patchproof doctor` and paste the output here."
+      render: shell
+      placeholder: |
+        Python version:
+        OS (macOS / Linux / Windows):
+        PatchProof version:
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Relevant Logs or Traces"
+      description: "Paste relevant command line output or trace logs (sanitize any private tokens!)."
+      render: shell

@@ -1,0 +1,37 @@
+name: "✨ Feature Request"
+description: "Suggest a new idea, capability, or architectural enhancement for PatchProof"
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We love new ideas! Please describe the use-case and why this aligns with PatchProof's deterministic trust boundary principles.
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem or Need"
+      description: "Is your feature request related to a problem or limitation? Please describe."
+      placeholder: "I am frustrated when..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Proposed Solution"
+      description: "Describe the solution you'd like to see implemented."
+      placeholder: "Add support for..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives Considered"
+      description: "Describe any alternative solutions or features you've considered."
+  - type: checkboxes
+    id: alignment
+    attributes:
+      label: "Architectural Invariants"
+      options:
+        - label: "This feature preserves deterministic sandboxing and zero host mutation."
+        - label: "This feature does not weaken pinned test oracle verification."

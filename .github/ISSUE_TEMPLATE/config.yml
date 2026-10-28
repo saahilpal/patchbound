@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "💬 Community Discussions"
+    url: "https://github.com/saahilpal/patchproof/discussions"
+    about: "Ask questions, share ideas, or discuss integrations with Synapse and LLM providers."
+  - name: "🔒 Security Vulnerability"
+    url: "https://github.com/saahilpal/patchproof/security/policy"
+    about: "Report security vulnerabilities responsibly via our disclosure policy."

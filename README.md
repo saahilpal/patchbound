@@ -2,6 +2,14 @@
 
 <div align="center">
 
+```
+ ____       _       _     ____                 __ 
+|  _ \ __ _| |_ ___| |__ |  _ \ _ __ ___   ___  / _|
+| |_) / _` | __/ __| '_ \| |_) | '__/ _ \ / _ \| |_ 
+|  __/ (_| | || (__| | | |  __/| | | (_) | (_) |  _|
+|_|   \__,_|\__\___|_| |_|_|   |_|  \___/ \___/|_|  
+```
+
 [![PyPI](https://img.shields.io/pypi/v/patchproof.svg?logo=pypi&logoColor=white)](https://pypi.org/project/patchproof/)
 [![Release](https://img.shields.io/badge/Release-v1.1.0-orange?logo=github)](https://github.com/saahilpal/patchproof/releases/tag/v1.1.0)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -11,11 +19,13 @@
 [![Tests](https://img.shields.io/badge/Tests-56%20passed-success?logo=pytest)](tests/)
 [![Powered By Synapse](https://img.shields.io/badge/AST%20Engine-Synapse%20v2.4-blueviolet)](https://github.com/saahilpal/synapse)
 [![Verification](https://img.shields.io/badge/Assurance%20Levels-V1%20to%20V3%20CI--Clean-purple)](docs/VERIFICATION_AND_CLAIM_LEDGER.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
+[![Discussions](https://img.shields.io/badge/Discussions-Join-teal?logo=github)](https://github.com/saahilpal/patchproof/discussions)
 
 **The Deterministic Trust Boundary & Bounded AI Repair Engine.**  
 *Autonomous software diagnosis, AST call graph navigation, and cryptographic verification for mission-critical codebases.*
 
-[Philosophy](#-the-core-philosophy) • [Under the Hood](#-under-the-hood-the-7-step-causal-repair-lifecycle) • [Supercharged by Synapse](#-supercharged-by-synapse-by-saahilpal) • [Competitor Analysis](#-competitive-landscape--first-principles-differentiation) • [Quickstart & CLI](#-quickstart--cli-reference) • [Secure Auth](#-secure-credential-management-0600-invariants) • [Docs](#-documentation-index)
+[Philosophy](#-the-core-philosophy) • [Under the Hood](#-under-the-hood-the-7-step-causal-repair-lifecycle) • [Supercharged by Synapse](#-supercharged-by-synapse-by-saahilpal) • [Competitor Analysis](#-competitive-landscape--first-principles-differentiation) • [Quickstart & CLI](#-quickstart--cli-reference) • [Secure Auth](#-secure-credential-management-0600-invariants) • [Docs](#-documentation-index) • [Community](#-community--contributing)
 
 </div>
 
@@ -337,6 +347,45 @@ Every repair emits a tamper-evident audit ledger embedded in the final Pull Requ
 ## 🤝 Ecosystem & Connected Projects
 
 - **[Synapse (`synap-git`)](https://github.com/saahilpal/synapse):** Deterministic Git-aware structural AST retrieval engine created by [@saahilpal](https://github.com/saahilpal). Provides PatchProof with sub-millisecond symbol resolution, bidirectional caller-callee graphs, and impacted test set computation.
+
+---
+
+## 👥 Community & Contributing
+
+We welcome contributions from researchers, software engineers, and AI safety practitioners!
+
+- 📖 **Contributor Guide:** Check out [CONTRIBUTING.md](.github/CONTRIBUTING.md) for local environment setup, testing commands, and git conventions.
+- 💬 **Discussions:** Join our [GitHub Discussions](https://github.com/saahilpal/patchproof/discussions) to ask questions or share ideas.
+- 🛡️ **Security Invariants:** Please review our [Security Policy](.github/SECURITY.md) before reporting vulnerabilities.
+- 🤝 **Code of Conduct:** We adhere to the [Contributor Covenant v2.1](.github/CODE_OF_CONDUCT.md).
+- ❓ **Support:** Need assistance? See [SUPPORT.md](.github/SUPPORT.md).
+
+---
+
+## 📑 Academic Citation
+
+If you use PatchProof or its epistemological verification engine in your academic research, benchmarking studies, or publications, please cite:
+
+```bibtex
+@software{pal2026patchproof,
+  author = {Pal, Sahil and Contributors},
+  title = {PatchProof: Deterministic Trust Boundary & Bounded AI Repair Engine},
+  year = {2026},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/saahilpal/patchproof}}
+}
+```
+
+---
+
+## ⭐ Star History
+
+<div align="center">
+
+[![Star History Chart](https://api.star-history.com/svg?repos=saahilpal/patchproof&type=Date)](https://star-history.com/#saahilpal/patchproof&Date)
+
+</div>
 
 ---
 
