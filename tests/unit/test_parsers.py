@@ -81,3 +81,4 @@ FAILED tests/test_calculator.py::test_subtract - AssertionError: assert -1 == 3
     assert sig.top_frame is not None
     assert sig.top_frame.file_path == "tests/test_calculator.py"
     assert sig.top_frame.line_number == 12
+

@@ -345,6 +345,7 @@ Every repair emits a tamper-evident audit ledger embedded in the final Pull Requ
 | 🔄 [**LangGraph State Machine**](docs/LANGGRAPH_STATE_MACHINE.md) | State schema, reducers, human approval interrupt semantics, and hash-chained audit journal. |
 | 📊 [**Evaluation Harness**](docs/EVALUATION_HARNESS.md) | Benchmark methodology, False-Verified Rate ($FVR$), and synthetic mutation injector. |
 | 🔌 [**API & Interface Contracts**](docs/API_AND_INTERFACES.md) | Pydantic models, runner adapter interfaces, and context provider contracts. |
+| ⚖️ [**Architectural Trade-Offs**](docs/TRADEOFFS.md) | In-depth trade-off analysis, first-principles rationale, and decision matrix across all 12 system dimensions. |
 
 ---
 

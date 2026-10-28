@@ -55,3 +55,4 @@ def test_pinned_oracle_tampering_detection(tmp_path: Path) -> None:
     oracle = PinnedOracle(repo_dir, policy_engine=PolicyEngine())
     with pytest.raises(PolicyViolation, match="Oracle tampering detected"):
         oracle.verify_no_test_diffs()
+
