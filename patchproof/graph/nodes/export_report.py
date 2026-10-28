@@ -23,7 +23,10 @@ def export_report_node(state: PatchProofState) -> dict[str, Any]:
     review_notes = state.get("review_notes", "N/A")
 
     # 1. Determine final outcome
-    if human_approved and record and record.level != VerificationLevel.V0_FAILED:
+    existing_outcome = state.get("outcome")
+    if existing_outcome:
+        outcome = existing_outcome
+    elif human_approved and record and record.level != VerificationLevel.V0_FAILED:
         outcome = OutcomeResult.VERIFIED_EXPORTED
     elif record and record.level != VerificationLevel.V0_FAILED:
         outcome = OutcomeResult.VERIFIED_REJECTED

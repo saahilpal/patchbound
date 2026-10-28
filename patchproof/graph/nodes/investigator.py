@@ -67,26 +67,46 @@ def investigator_node(state: PatchProofState) -> dict[str, Any]:
     line_start = 1
     line_end = 1
 
-    # Attempt to locate target symbol from failure signature or test id
-    query_target = ""
-    if active_sig and active_sig.normalized_message:
-        words = [w.strip("(),:'\"") for w in active_sig.normalized_message.split() if len(w) > 3]
-        if words:
-            query_target = words[0]
-    if not query_target and test_id:
-        # e.g., tests/test_calc.py::test_subtract -> subtract
-        parts = test_id.split("::")[-1].replace("test_", "")
-        query_target = parts
+    # Attempt to locate target symbol from stack frame, test id, or failure signature
+    candidates: list[str] = []
 
-    if query_target:
-        sym_defs = context_provider.find_symbol_definitions(query_target)
+    # 1. Top stack frame function if non-test
+    if active_sig and active_sig.top_frame and active_sig.top_frame.function_name:
+        fn = active_sig.top_frame.function_name
+        if not fn.startswith("test_") and fn != "<module>" and not fn.endswith("Error"):
+            candidates.append(fn)
+
+    # 2. Test ID symbol (e.g. tests/test_calc.py::test_subtract -> subtract)
+    if test_id and "::" in test_id:
+        fn_part = test_id.split("::")[-1]
+        if fn_part.startswith("test_"):
+            candidates.append(fn_part[5:])
+        else:
+            candidates.append(fn_part)
+
+    # 3. Clean tokens from failure message excluding common python exceptions
+    if active_sig and active_sig.normalized_message:
+        ignored = {
+            "assertionerror", "typeerror", "valueerror", "indexerror", "keyerror",
+            "zerodivisionerror", "failed", "assert", "where", "expected", "got", "true", "false", "none"
+        }
+        for w in active_sig.normalized_message.split():
+            clean_w = w.strip("(),:'\"[]{}")
+            if len(clean_w) > 2 and clean_w.lower() not in ignored and clean_w.isidentifier():
+                candidates.append(clean_w)
+
+    for cand in candidates:
+        sym_defs = context_provider.find_symbol_definitions(cand)
         if sym_defs:
-            sym_def = sym_defs[0]
+            # Prefer definitions in implementation files over test files
+            non_test_defs = [s for s in sym_defs if not s.file_path.startswith("test")]
+            sym_def = non_test_defs[0] if non_test_defs else sym_defs[0]
             symbol_name = sym_def.symbol_name
             target_file = sym_def.file_path
             line_start = sym_def.line_start
             line_end = sym_def.line_end
             exact_quote = sym_def.symbol_name
+            break
 
     # If symbol was located, construct a grounded citation
     if target_file and head_sha != "0" * 40:

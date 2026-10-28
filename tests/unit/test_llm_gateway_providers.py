@@ -67,3 +67,28 @@ def test_synthesize_repair_plan_parses_json() -> None:
         assert len(plan.anchored_edits) == 1
         assert plan.anchored_edits[0].file_path == "calc.py"
         assert plan.anchored_edits[0].new_text == "return a + b"
+
+
+def test_synthesize_repair_plan_resilient_to_prose_wrapping() -> None:
+    """Verify that JSON wrapped in conversational prose without markdown fences is extracted."""
+    gateway = LLMGateway()
+    prose_json = """
+    Sure, here is the verified repair plan for your code:
+    {
+      "repair_plan": "Replace multiply with divide",
+      "target_tests": ["test_div"],
+      "anchored_edits": [
+        {
+          "file_path": "math.py",
+          "old_text": "a * b",
+          "new_text": "a / b"
+        }
+      ]
+    }
+    Hope this helps! Let me know if you need more fixes.
+    """
+    with patch.object(gateway, "query", return_value=prose_json):
+        plan = gateway.synthesize_repair_plan("prompt", "system")
+        assert plan is not None
+        assert plan.repair_plan == "Replace multiply with divide"
+        assert plan.anchored_edits[0].new_text == "a / b"

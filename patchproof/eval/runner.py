@@ -43,7 +43,7 @@ class BenchmarkRunner:
 
         if level_str in ("V1", "V2", "V3") and fixture.held_out_command:
             # Execute held-out suite against patched workspace
-            workspace = Path(result.get("repo_path", "."))
+            workspace = Path(result.get("patched_workspace_path") or result.get("repo_path", "."))
             held_out_report = self.verification_runner.run_tests(
                 workspace, fixture.held_out_command, timeout_seconds=60
             )

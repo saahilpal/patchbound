@@ -148,3 +148,30 @@ def test_cli_diagnose_and_repair_end_to_end(tmp_path: Path) -> None:
     assert sym_res.exit_code == 0
     assert "Using provider:" in sym_res.output
     assert "Found: `add`" in sym_res.output
+
+
+def test_cli_repair_with_export_diff_and_apply(tmp_path: Path) -> None:
+    """Verify that CLI repair with --export-diff and --apply runs and saves patch."""
+    fixture_dir = tmp_path / "fixtures" / "cli_repair_repo"
+    files = {
+        "calculator.py": "def add(a, b):\n    return a - b\n",
+        "tests/test_calculator.py": "from calculator import add\n\ndef test_add():\n    assert add(2, 3) == 5\n",
+    }
+    repo_path = create_git_fixture(fixture_dir, files)
+    export_file = tmp_path / "test_fix.diff"
+
+    runner = CliRunner()
+    res = runner.invoke(
+        main,
+        [
+            "repair",
+            str(repo_path),
+            "--cmd",
+            "pytest -v tests/test_calculator.py",
+            "--export-diff",
+            str(export_file),
+            "--apply",
+        ],
+    )
+    assert res.exit_code == 0
+    assert "Pipeline Terminated." in res.output

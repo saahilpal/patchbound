@@ -104,6 +104,25 @@ class PytestParser(TestReportParser):
         return report
 
     def _create_signature(self, test_id: str, error_type: str, message: str, full_trace: str) -> FailureSignature:
+        # Refine error_type and message from pytest traceback if generic
+        if error_type == "TestFailure" or message == "Failed during test run":
+            # 1. Look for 'E   ErrorType: Message' or 'E   assert ...'
+            e_match = re.search(r"^E\s+([A-Za-z_][A-Za-z0-9_]*Error|[A-Za-z_][A-Za-z0-9_]*Exception):\s*(.+)$", full_trace, re.MULTILINE)
+            if e_match:
+                error_type = e_match.group(1)
+                message = e_match.group(2).strip()
+            else:
+                e_assert = re.search(r"^E\s+(assert\s+.+)$", full_trace, re.MULTILINE)
+                if e_assert:
+                    error_type = "AssertionError"
+                    message = e_assert.group(1).strip()
+                else:
+                    # Look for 'FAILED test_id - ErrorType: Message'
+                    failed_match = re.search(rf"FAILED\s+{re.escape(test_id)}\s*-\s*([A-Za-z_][A-Za-z0-9_]*):\s*(.+)", full_trace)
+                    if failed_match:
+                        error_type = failed_match.group(1)
+                        message = failed_match.group(2).strip()
+
         norm_message = re.sub(r"0x[0-9a-fA-F]+", "0x...", message).strip()
         top_frame = None
 
@@ -116,6 +135,16 @@ class PytestParser(TestReportParser):
                 line_number=int(last_line),
                 function_name=last_fn,
             )
+        else:
+            # Check pytest file:line: ErrorType style (e.g. tests/test_calc.py:8: AssertionError)
+            pytest_loc = re.findall(r'([a-zA-Z0-9_./\\-]+\.py):(\d+):\s+([A-Za-z_][A-Za-z0-9_]*)', full_trace)
+            if pytest_loc:
+                last_file, last_line, last_err = pytest_loc[-1]
+                top_frame = StackFrame(
+                    file_path=last_file,
+                    line_number=int(last_line),
+                    function_name=last_err,
+                )
 
         sig_id = compute_sha256(f"{test_id}:{error_type}:{norm_message}")
         return FailureSignature(

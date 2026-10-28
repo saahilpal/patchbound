@@ -47,7 +47,7 @@ def patch_verify_node(state: PatchProofState) -> dict[str, Any]:
         AntiCheatChecker.check_assert_removal(canonical_diff)
 
         # 3. Restore and verify pinned test oracle
-        oracle = PinnedOracle(workspace)
+        oracle = PinnedOracle(workspace, policy_engine=policy_engine)
         oracle.restore_test_files_and_configs()
         oracle.verify_no_test_diffs()
 
@@ -91,6 +91,7 @@ def patch_verify_node(state: PatchProofState) -> dict[str, Any]:
             "patch_digest": patch_digest,
             "verification_record": record,
             "failure_delta": failure_delta,
+            "patched_workspace_path": str(workspace),
             "attempt": attempt + 1,
         }
 

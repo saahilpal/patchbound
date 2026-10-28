@@ -3,7 +3,7 @@
 import subprocess
 from pathlib import Path
 
-from patchproof.core.policy import PolicyViolation
+from patchproof.core.policy import PolicyEngine, PolicyViolation
 
 
 class PinnedOracle:
@@ -22,13 +22,14 @@ class PinnedOracle:
         "vitest.config.ts",
     ]
 
-    def __init__(self, workspace_path: Path):
+    def __init__(self, workspace_path: Path, policy_engine: PolicyEngine | None = None):
         self.workspace_path = workspace_path.resolve()
+        self.policy_engine = policy_engine or PolicyEngine()
 
     def restore_test_files_and_configs(self) -> None:
         """Restore all test directories and configuration files to HEAD."""
-        # 1. Restore tests/ directories
         try:
+            # 1. Restore standard test directories
             subprocess.run(
                 ["git", "checkout", "HEAD", "--", "tests/", "test/"],
                 cwd=self.workspace_path,
@@ -36,11 +37,27 @@ class PinnedOracle:
                 check=False,
             )
 
-            # 2. Restore root configuration files
-            for cfg in self.PROTECTED_CONFIG_PATTERNS:
-                if (self.workspace_path / cfg).exists():
+            # 2. Check for any other modified files that match protected policy patterns
+            diff_proc = subprocess.run(
+                ["git", "diff", "--name-only", "HEAD"],
+                cwd=self.workspace_path,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            for line in diff_proc.stdout.splitlines():
+                f = line.strip()
+                if not f:
+                    continue
+                should_restore = False
+                try:
+                    self.policy_engine.check_file_path(f)
+                except PolicyViolation:
+                    should_restore = True
+
+                if should_restore or f in self.PROTECTED_CONFIG_PATTERNS or Path(f).name in self.PROTECTED_CONFIG_PATTERNS:
                     subprocess.run(
-                        ["git", "checkout", "HEAD", "--", cfg],
+                        ["git", "checkout", "HEAD", "--", f],
                         cwd=self.workspace_path,
                         capture_output=True,
                         check=False,
@@ -57,7 +74,13 @@ class PinnedOracle:
         )
         modified_files = [f.strip() for f in diff_output.splitlines() if f.strip()]
         for f in modified_files:
-            if f.startswith("tests/") or f.startswith("test/") or f in self.PROTECTED_CONFIG_PATTERNS:
+            try:
+                self.policy_engine.check_file_path(f)
+            except PolicyViolation:
                 raise PolicyViolation(
-                    f"Oracle tampering detected! Test or config file was modified by patch: {f}"
+                    f"Oracle tampering detected! Test or protected file was modified by patch: {f}"
+                ) from None
+            if f in self.PROTECTED_CONFIG_PATTERNS or Path(f).name in self.PROTECTED_CONFIG_PATTERNS:
+                raise PolicyViolation(
+                    f"Oracle tampering detected! Protected config file was modified by patch: {f}"
                 )

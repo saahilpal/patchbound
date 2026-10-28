@@ -343,9 +343,10 @@ def diagnose(repo_path: Path, cmd: str) -> None:
 @click.argument("repo_path", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.option("--cmd", default="pytest -v", help="Command to reproduce the failure.")
 @click.option("--export-diff", type=click.Path(path_type=Path), default=None, help="File to export verified patch.")
+@click.option("--apply", is_flag=True, default=False, help="Safely apply verified patch to host repository if Level V1-V3 passes.")
 @click.option("--max-retries", default=settings.max_retries, type=int, help="Maximum repair retry attempts.")
 @click.option("--auto-approve/--no-auto-approve", default=True, help="Auto-approve verified patch when policy passes.")
-def repair(repo_path: Path, cmd: str, export_diff: Path | None, max_retries: int, auto_approve: bool) -> None:
+def repair(repo_path: Path, cmd: str, export_diff: Path | None, apply: bool, max_retries: int, auto_approve: bool) -> None:
     """Run full 9-stage pipeline: reproduction, investigation, repair, verification & approval."""
     PatchProofUI.print_banner()
     console.print(f"[bold cyan]Target Repository:[/bold cyan] {repo_path}")
@@ -384,13 +385,32 @@ def repair(repo_path: Path, cmd: str, export_diff: Path | None, max_retries: int
     if result.get("exported_patch_path"):
         console.print(f"[bold green]Patch Exported To:[/bold green] `{result.get('exported_patch_path')}`")
 
+    if apply:
+        if record and record.level != VerificationLevel.V0_FAILED and diff:
+            console.print(f"\n[bold cyan]Applying verified patch to host repository:[/bold cyan] {repo_path}...")
+            try:
+                subprocess.run(
+                    ["git", "apply", "-"],
+                    input=diff,
+                    text=True,
+                    cwd=repo_path,
+                    capture_output=True,
+                    check=True,
+                )
+                console.print("[bold green]✓ Verified patch successfully applied to host repository![/bold green]")
+            except subprocess.CalledProcessError as e:
+                console.print(f"[bold red]Failed to apply patch to host:[/bold red] {e.stderr or e.stdout}")
+        else:
+            console.print("[bold yellow]Skipping host patch application:[/bold yellow] Patch did not achieve verified status.")
+
 
 @main.command(name="run")
 @click.argument("repo_path", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.option("--cmd", default="pytest -v", help="Command to reproduce the failure.")
 @click.option("--export-diff", type=click.Path(path_type=Path), default=None, help="File to export verified patch.")
+@click.option("--apply", is_flag=True, default=False, help="Safely apply verified patch to host repository if Level V1-V3 passes.")
 @click.pass_context
-def run_alias(ctx: click.Context, repo_path: Path, cmd: str, export_diff: Path | None) -> None:
+def run_alias(ctx: click.Context, repo_path: Path, cmd: str, export_diff: Path | None, apply: bool) -> None:
     """Alias for repair command."""
     ctx.forward(repair)
 

@@ -77,6 +77,7 @@ class PatchProofState(TypedDict, total=False):
     patch_digest: str
     verification_record: VerificationRecord | None
     failure_delta: FailureDelta | None
+    patched_workspace_path: str | None
 
     # Review & Anti-cheat (Stage 7)
     review_status: str  # approved, rejected, probe_required

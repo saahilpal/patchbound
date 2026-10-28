@@ -12,11 +12,24 @@ class JestVitestParser(TestReportParser):
 
     def parse(self, stdout: str, stderr: str, report_xml_or_json: str | None = None) -> ParsedReport:
         report = ParsedReport()
-        if not report_xml_or_json:
+        raw_json = report_xml_or_json
+
+        # If report content was not directly supplied, extract JSON from stdout
+        if not raw_json and stdout.strip():
+            trimmed = stdout.strip()
+            if trimmed.startswith("{") and trimmed.endswith("}"):
+                raw_json = trimmed
+            elif "{" in trimmed and "}" in trimmed:
+                start_idx = trimmed.find("{")
+                end_idx = trimmed.rfind("}")
+                if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                    raw_json = trimmed[start_idx : end_idx + 1]
+
+        if not raw_json:
             return report
 
         try:
-            data = json.loads(report_xml_or_json)
+            data = json.loads(raw_json)
         except json.JSONDecodeError:
             return report
 

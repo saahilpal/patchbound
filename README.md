@@ -16,7 +16,7 @@
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue?logo=python)](pyproject.toml)
 [![Type Checking](https://img.shields.io/badge/Type%20Checking-mypy%20strict-brightgreen?logo=python)](pyproject.toml)
 [![Linter](https://img.shields.io/badge/Linter-ruff-black?logo=ruff)](pyproject.toml)
-[![Tests](https://img.shields.io/badge/Tests-56%20passed-success?logo=pytest)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-65%20passed-success?logo=pytest)](tests/)
 [![Powered By Synapse](https://img.shields.io/badge/AST%20Engine-Synapse%20v2.4-blueviolet)](https://github.com/saahilpal/synapse)
 [![Verification](https://img.shields.io/badge/Assurance%20Levels-V1%20to%20V3%20CI--Clean-purple)](docs/VERIFICATION_AND_CLAIM_LEDGER.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
@@ -287,9 +287,13 @@ patchproof gh review owner/repo#105 --cmd "pytest -v"
 
 ### 5. Local Repository Repair
 
-Run the 9-stage loop on a local repository and export the verified patch diff:
+Run the 9-stage loop on a local repository, export the verified patch diff, and optionally apply it to the host workspace:
 ```bash
+# Verify and export patch diff
 patchproof repair /path/to/project --cmd "pytest -v tests/test_core.py" --export-diff fix.diff
+
+# Automatically apply the patch to the host repository once Level V1–V3 verification passes
+patchproof repair /path/to/project --cmd "pytest -v tests/test_core.py" --apply
 ```
 
 ### 6. Diagnose Mode (Zero-Token Triage)

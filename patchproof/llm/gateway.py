@@ -211,6 +211,14 @@ class LLMGateway:
             data = json.loads(json_str)
             return FixerPlanOutput.model_validate(data)
         except Exception:
+            # Fallback: search for outermost JSON object { ... }
+            brace_match = re.search(r"(\{[\s\S]*\})", json_str)
+            if brace_match:
+                try:
+                    data = json.loads(brace_match.group(1))
+                    return FixerPlanOutput.model_validate(data)
+                except Exception:
+                    pass
             return None
 
     def synthesize_review(self, prompt: str, system_prompt: str) -> ReviewerOutput | None:
@@ -226,4 +234,12 @@ class LLMGateway:
             data = json.loads(json_str)
             return ReviewerOutput.model_validate(data)
         except Exception:
+            # Fallback: search for outermost JSON object { ... }
+            brace_match = re.search(r"(\{[\s\S]*\})", json_str)
+            if brace_match:
+                try:
+                    data = json.loads(brace_match.group(1))
+                    return ReviewerOutput.model_validate(data)
+                except Exception:
+                    pass
             return None

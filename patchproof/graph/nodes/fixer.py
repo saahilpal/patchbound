@@ -25,7 +25,7 @@ def fixer_node(state: PatchProofState) -> dict[str, Any]:
 
     # 1. Attempt Real LLM Synthesis if an API key is configured
     gateway = LLMGateway()
-    if gateway.has_active_provider() and attempt > 0:
+    if gateway.has_active_provider() and (not existing_edits or attempt > 0):
         system_prompt = (
             "You are an expert systems software engineer synthesizing an exact minimal bug fix.\n"
             "Return a strictly valid JSON object matching the FixerPlanOutput schema:\n"
