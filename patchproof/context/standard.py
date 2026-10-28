@@ -23,7 +23,7 @@ class StandardContextProvider(ContextProvider):
         return "\n".join(lines[start:end])
 
     def grep_search(self, pattern: str, path_prefix: str | None = None) -> list[tuple[str, int, str]]:
-        cmd = ["grep", "-rn", pattern]
+        cmd = ["grep", "-rnE", pattern]
         if path_prefix:
             cmd.append(path_prefix)
         else:
