@@ -258,3 +258,4 @@ class GitHubClient:
             "*Zero secret egress, AST anti-cheat passed, CI-clean.*",
         ])
         return "\n".join(body_lines)
+

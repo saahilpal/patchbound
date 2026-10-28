@@ -33,3 +33,4 @@ def test_initialize_defaults_in_temp_dir(tmp_path: Path) -> None:
     content = (tmp_path / "policy.yaml").read_text(encoding="utf-8")
     assert "default-strict-v1.1" in content
     assert "pytest_skip" in content
+
