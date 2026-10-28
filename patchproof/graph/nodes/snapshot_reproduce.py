@@ -1,0 +1,52 @@
+"""Stage 1: Snapshot and Reproduce (Deterministic)."""
+
+from pathlib import Path
+from patchproof.config import settings
+from patchproof.core.clone import CloneManager
+from patchproof.core.models import ProcessStatus
+from patchproof.graph.state import PatchProofState
+from patchproof.verification.parsers.pytest_parser import PytestParser
+from patchproof.verification.runner import VerificationRunner
+
+
+def snapshot_reproduce_node(state: PatchProofState) -> dict:
+    """Stage 1: Create disposable clone and execute reproduction baseline N times."""
+    investigation_id = state.get("investigation_id", "inv-001")
+    repo_path = Path(state.get("repo_path", "."))
+    reproduce_cmd = state.get("reproduce_cmd", ["pytest", "-v"])
+    attempt = state.get("attempt", 0)
+
+    clone_mgr = CloneManager(repo_path, settings.workspace_root)
+    clone_mgr.record_pre_state()
+    workspace = clone_mgr.create_disposable_clone(investigation_id, attempt)
+
+    runner = VerificationRunner()
+    runs = []
+    num_runs = 3
+
+    for _ in range(num_runs):
+        parsed = runner.run_tests(workspace, reproduce_cmd, timeout_seconds=settings.timeout_seconds_per_test)
+        runs.append(parsed)
+
+    # Classify reproduction
+    failed_counts = [r.total_failed for r in runs]
+    if all(c == 0 for c in failed_counts):
+        classification = "not_reproducible"
+    elif all(c > 0 for c in failed_counts):
+        classification = "reproduced"
+    else:
+        classification = "flaky"
+
+    # Identify F2P (failed in runs) and P2P (passed in runs)
+    baseline_run = runs[0]
+    f2p = [sig.test_id for sig in baseline_run.failed_signatures]
+    p2p = baseline_run.passed_test_ids
+
+    return {
+        "status": ProcessStatus.REPRODUCING,
+        "reproduce_classification": classification,
+        "f2p_test_ids": f2p,
+        "p2p_test_ids": p2p,
+        "failure_signatures": baseline_run.failed_signatures,
+        "active_failure_signature": baseline_run.failed_signatures[0] if baseline_run.failed_signatures else None,
+    }
