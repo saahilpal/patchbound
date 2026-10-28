@@ -54,3 +54,4 @@ def test_synapse_provider_clean_fallback_on_unindexed_repo(temp_workspace: Path)
 
     matches = provider.grep_search("def add")
     assert len(matches) > 0
+

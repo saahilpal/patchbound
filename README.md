@@ -27,6 +27,7 @@ Unlike complex multi-agent frameworks that chain 7+ conversational LLMs together
 
 Comprehensive technical specifications and implementation guides are available in [`docs/`](file:///Users/nitrousoxide/Code/patchproof/docs/):
 
+- 📋 [**Product Requirements Document (PRD)**](file:///Users/nitrousoxide/Code/patchproof/docs/PRD.md): Product vision, user personas, functional/non-functional requirements, and safety KPIs.
 - 🏛️ [**Architecture Specification**](file:///Users/nitrousoxide/Code/patchproof/docs/ARCHITECTURE.md): The 9-stage execution graph, deterministic spine, and 3 narrow LLM roles.
 - 🗺️ [**Engineering Roadmap & Build Order**](file:///Users/nitrousoxide/Code/patchproof/docs/ROADMAP.md): Phased build plan, M1-M4 milestones, falsifiable hypotheses, and explicit deferrals.
 - 🛡️ [**System Design & Trust Boundary**](file:///Users/nitrousoxide/Code/patchproof/docs/SYSTEM_DESIGN_AND_TRUST_BOUNDARY.md): Disposable local clones, host invariants, two-phase sandboxing, and unified policy (`policy.yaml`).
@@ -42,6 +43,7 @@ Comprehensive technical specifications and implementation guides are available i
 ```
 patchproof/
 ├── docs/                               # Senior AI Engineering Documentation Suite
+│   ├── PRD.md                          # Product requirements, personas, FRs/NFRs & success metrics
 │   ├── ARCHITECTURE.md                 # 9-stage graph, deterministic spine & 3 LLM roles
 │   ├── ROADMAP.md                      # Phased build order, milestones & falsifiable evaluation
 │   ├── SYSTEM_DESIGN_AND_TRUST_BOUNDARY.md # Sandboxing, git invariants & policy file
