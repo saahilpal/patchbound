@@ -73,12 +73,20 @@ class LocalTrustedSandbox(SandboxRunner):
         """Execute command with timeout and environment scrubbing."""
         import time
         start = time.perf_counter()
-        # Clean environment to prevent secret leaking
+        # Clean environment to prevent secret leaking while preserving tool execution PATH
+        import os
+        import sys
+
+        sys_bin = str(Path(sys.executable).parent)
+        base_path = os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin")
+        safe_path = f"{sys_bin}:/opt/homebrew/bin:{base_path}"
+
         clean_env = {
-            "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+            "PATH": safe_path,
             "HOME": str(workspace_path),
             "LANG": "en_US.UTF-8",
             "LC_ALL": "en_US.UTF-8",
+            "PYTHONPATH": str(workspace_path),
         }
         try:
             proc = subprocess.run(
