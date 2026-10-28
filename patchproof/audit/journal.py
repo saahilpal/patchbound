@@ -3,14 +3,17 @@
 import json
 import time
 from pathlib import Path
+from typing import Any
+
 from pydantic import BaseModel
+
 from patchproof.core.digest import compute_sha256
 
 
 class JournalEntry(BaseModel):
     timestamp: float
     event_type: str
-    payload: dict
+    payload: dict[str, Any]
     prev_hash: str
     entry_hash: str
 
@@ -30,7 +33,7 @@ class AuditJournal:
                 last_record = json.loads(lines[-1])
                 self.last_hash = last_record["entry_hash"]
 
-    def record_event(self, event_type: str, payload: dict) -> JournalEntry:
+    def record_event(self, event_type: str, payload: dict[str, Any]) -> JournalEntry:
         """Append an event to the hash chain."""
         now = time.time()
         payload_str = json.dumps(payload, sort_keys=True)

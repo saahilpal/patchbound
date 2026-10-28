@@ -1,10 +1,11 @@
 """Core data models and schemas for PatchProof."""
 
-from enum import Enum
+from enum import StrEnum
+
 from pydantic import BaseModel, Field
 
 
-class ProcessStatus(str, Enum):
+class ProcessStatus(StrEnum):
     """Internal execution state of the PatchProof pipeline."""
 
     INITIALIZING = "initializing"
@@ -19,7 +20,7 @@ class ProcessStatus(str, Enum):
     TERMINATED = "terminated"
 
 
-class OutcomeResult(str, Enum):
+class OutcomeResult(StrEnum):
     """Terminal business outcome classification."""
 
     VERIFIED_EXPORTED = "verified_exported"
@@ -70,7 +71,7 @@ class FixerOutput(BaseModel):
     edits: list[AnchoredEdit] = Field(description="Ordered sequence of anchored edits")
 
 
-class VerificationLevel(str, Enum):
+class VerificationLevel(StrEnum):
     """Verification tiers."""
 
     V0_FAILED = "V0"

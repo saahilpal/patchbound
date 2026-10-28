@@ -1,10 +1,12 @@
 """Comprehensive guardrail definitions and exception hierarchy."""
 
-from enum import Enum
+from enum import StrEnum
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
-class GuardrailSeverity(str, Enum):
+class GuardrailSeverity(StrEnum):
     """Severity level of a guardrail violation."""
 
     HARD_GATE = "hard_gate"  # Halts execution immediately; cannot be overridden
@@ -29,4 +31,4 @@ class GuardrailCheckResult(BaseModel):
     passed: bool
     severity: GuardrailSeverity
     message: str
-    details: dict = Field(default_factory=dict)
+    details: dict[str, Any] = Field(default_factory=dict)

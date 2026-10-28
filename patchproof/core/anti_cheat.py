@@ -2,6 +2,7 @@
 
 import ast
 import re
+
 from patchproof.core.policy import PolicyViolation
 
 
@@ -16,7 +17,7 @@ class AntiCheatChecker:
             for line in canonical_diff.splitlines()
             if line.startswith("-") and not line.startswith("---")
         ]
-        
+
         for line in deleted_lines:
             # Check for Python assert
             if re.match(r"^assert\b", line):

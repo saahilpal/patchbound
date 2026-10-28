@@ -2,7 +2,7 @@
 
 from patchproof.core.digest import compute_sha256
 from patchproof.core.models import AnchoredEdit
-from patchproof.guardrails.base import GuardrailCheckResult, GuardrailSeverity, GuardrailViolation
+from patchproof.guardrails.base import GuardrailCheckResult, GuardrailSeverity
 
 
 class InflightGuardrails:

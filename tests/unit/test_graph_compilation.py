@@ -3,7 +3,7 @@
 from patchproof.graph.workflow import compile_patchproof_graph, create_patchproof_graph
 
 
-def test_graph_structure():
+def test_graph_structure() -> None:
     workflow = create_patchproof_graph()
     assert "snapshot_reproduce" in workflow.nodes
     assert "parse_triage" in workflow.nodes
@@ -16,6 +16,6 @@ def test_graph_structure():
     assert "export_report" in workflow.nodes
 
 
-def test_graph_compilation():
+def test_graph_compilation() -> None:
     app = compile_patchproof_graph()
     assert app is not None

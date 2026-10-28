@@ -3,8 +3,9 @@
 import fnmatch
 import re
 from pathlib import Path
-from pydantic import BaseModel, Field
+
 import yaml
+from pydantic import BaseModel, Field
 
 
 class ForbiddenPattern(BaseModel):

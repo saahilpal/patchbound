@@ -1,8 +1,9 @@
 """Pre-flight guardrails ensuring environment and repository safety prior to execution."""
 
 import shutil
-from pathlib import Path
 import subprocess
+from pathlib import Path
+
 from patchproof.guardrails.base import GuardrailCheckResult, GuardrailSeverity, GuardrailViolation
 
 

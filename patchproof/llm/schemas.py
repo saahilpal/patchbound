@@ -1,6 +1,7 @@
 """Pydantic schemas for LLM structured outputs."""
 
 from pydantic import BaseModel, Field
+
 from patchproof.core.models import AnchoredEdit
 
 

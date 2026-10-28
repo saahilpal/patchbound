@@ -22,5 +22,5 @@ def compute_file_sha256(file_path: Path) -> str:
 
 def compute_patch_digest(base_tree_hash: str, canonical_diff: str) -> str:
     """Compute canonical patch digest: SHA-256(base_tree_hash || canonical_diff)."""
-    payload = f"{base_tree_hash}:{canonical_diff}".encode("utf-8")
+    payload = f"{base_tree_hash}:{canonical_diff}".encode()
     return hashlib.sha256(payload).hexdigest()

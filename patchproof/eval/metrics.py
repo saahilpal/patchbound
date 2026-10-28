@@ -1,6 +1,8 @@
 """Statistical metrics and evaluation scoring engine for program repair systems."""
 
 import math
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -52,7 +54,7 @@ class EvalCalculator:
     def compute_summary(
         cls,
         arm_name: str,
-        results: list[dict],
+        results: list[dict[str, Any]],
     ) -> EvalMetricsSummary:
         """Compute aggregate benchmark metrics across a collection of fixture outcomes."""
         summary = EvalMetricsSummary(arm_name=arm_name, total_fixtures=len(results))

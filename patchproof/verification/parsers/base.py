@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+
 from patchproof.core.models import FailureSignature
 
 

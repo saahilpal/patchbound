@@ -1,10 +1,12 @@
 """Stage 5: Fixer (Single Structured LLM Call)."""
 
+from typing import Any
+
 from patchproof.core.models import ProcessStatus
 from patchproof.graph.state import PatchProofState
 
 
-def fixer_node(state: PatchProofState) -> dict:
+def fixer_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 5: Synthesize a repair plan and anchored edits in a single structured call."""
     f2p = state.get("f2p_test_ids", [])
 

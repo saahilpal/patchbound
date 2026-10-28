@@ -5,7 +5,7 @@ from patchproof.verification.levels import VerificationEvaluator
 from patchproof.verification.parsers.base import ParsedReport
 
 
-def test_level_v3_ci_clean():
+def test_level_v3_ci_clean() -> None:
     f2p = {"tests/test_foo.py::test_failing"}
     p2p = {"tests/test_foo.py::test_passing"}
 
@@ -40,7 +40,7 @@ def test_level_v3_ci_clean():
     assert record.total_executed == 2
 
 
-def test_level_v0_when_f2p_still_fails():
+def test_level_v0_when_f2p_still_fails() -> None:
     f2p = {"tests/test_foo.py::test_failing"}
     p2p = {"tests/test_foo.py::test_passing"}
 

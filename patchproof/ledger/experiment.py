@@ -1,14 +1,16 @@
 """Interventional experiment runner in scratchpad workspaces."""
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
+
 from pydantic import BaseModel
+
 from patchproof.core.models import AnchoredEdit
 from patchproof.core.patcher import Patcher
 from patchproof.core.sandbox import LocalTrustedSandbox, SandboxRunner
 
 
-class ExperimentStatus(str, Enum):
+class ExperimentStatus(StrEnum):
     SUPPORTED = "supported"
     REFUTED = "refuted"
     INCONCLUSIVE = "inconclusive"

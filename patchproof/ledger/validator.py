@@ -1,7 +1,8 @@
 """Grounding validator: mechanically checks citation integrity and quotes against git tree."""
 
-from pathlib import Path
 import subprocess
+from pathlib import Path
+
 from patchproof.ledger.claim import ClaimItem
 
 
@@ -26,10 +27,10 @@ class GroundingValidator:
                     cwd=self.workspace_path,
                     text=True,
                 )
-            except subprocess.CalledProcessError:
+            except subprocess.CalledProcessError as e:
                 raise CitationFabricationError(
                     f"Fabricated file citation: {citation.file_path} does not exist at tree {citation.tree_hash}"
-                )
+                ) from e
 
             lines = file_content.splitlines()
             start_idx = max(0, citation.line_start - 1)
@@ -47,3 +48,8 @@ class GroundingValidator:
                     f"Cited: '{norm_quote}'\n"
                     f"Actual: '{norm_actual}'"
                 )
+
+
+# Alias for roadmap compatibility
+CitationValidator = GroundingValidator
+

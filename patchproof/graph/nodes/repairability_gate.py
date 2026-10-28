@@ -1,10 +1,12 @@
 """Stage 3: Repairability Gate (Deterministic Policy)."""
 
+from typing import Any
+
 from patchproof.core.models import OutcomeResult, ProcessStatus
 from patchproof.graph.state import PatchProofState
 
 
-def repairability_gate_node(state: PatchProofState) -> dict:
+def repairability_gate_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 3: Decide between active repair or immediate diagnosis-only report."""
     classification = state.get("reproduce_classification", "not_reproducible")
 

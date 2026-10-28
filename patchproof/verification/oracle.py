@@ -1,7 +1,8 @@
 """Pinned test oracle: restores test files and configs to base commit hash."""
 
-from pathlib import Path
 import subprocess
+from pathlib import Path
+
 from patchproof.core.policy import PolicyViolation
 
 

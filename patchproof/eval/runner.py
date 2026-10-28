@@ -2,6 +2,8 @@
 
 import time
 from pathlib import Path
+from typing import Any
+
 from patchproof.core.models import ProcessStatus
 from patchproof.eval.datasets import EvalFixture
 from patchproof.eval.metrics import EvalCalculator, EvalMetricsSummary
@@ -17,7 +19,7 @@ class BenchmarkRunner:
         self.app = compile_patchproof_graph()
         self.verification_runner = VerificationRunner()
 
-    def run_fixture(self, fixture: EvalFixture) -> dict:
+    def run_fixture(self, fixture: EvalFixture) -> dict[str, Any]:
         """Execute a single fixture through the pipeline and test held-out suite."""
         start_time = time.perf_counter()
 

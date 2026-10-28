@@ -1,11 +1,13 @@
 """Stage 4: Investigator (Bounded LLM Agent Loop)."""
 
+from typing import Any
+
 from patchproof.core.models import ProcessStatus
 from patchproof.graph.state import PatchProofState
 from patchproof.ledger.claim import ClaimItem, ClaimType
 
 
-def investigator_node(state: PatchProofState) -> dict:
+def investigator_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 4: Investigate root cause using read-only tools and interventional experiments."""
     active_sig = state.get("active_failure_signature")
     test_id = active_sig.test_id if active_sig else "unknown"

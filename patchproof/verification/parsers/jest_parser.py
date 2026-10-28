@@ -1,6 +1,7 @@
 """Deterministic test report parser for Jest and Vitest (JSON format)."""
 
 import json
+
 from patchproof.core.digest import compute_sha256
 from patchproof.core.models import FailureSignature
 from patchproof.verification.parsers.base import ParsedReport, TestReportParser

@@ -1,22 +1,21 @@
 """Unit tests for preflight, inflight, and postflight guardrails."""
 
 from pathlib import Path
-import pytest
+
 from patchproof.core.models import AnchoredEdit
-from patchproof.guardrails.base import GuardrailSeverity, GuardrailViolation
-from patchproof.guardrails.engine import GuardrailEngine
+from patchproof.guardrails.base import GuardrailSeverity
 from patchproof.guardrails.inflight import InflightGuardrails
 from patchproof.guardrails.postflight import PostflightGuardrails
 from patchproof.guardrails.preflight import PreflightGuardrails
 
 
-def test_preflight_valid_repo(temp_workspace: Path, tmp_path: Path):
+def test_preflight_valid_repo(temp_workspace: Path, tmp_path: Path) -> None:
     scratch_dir = tmp_path / "scratch"
     results = PreflightGuardrails.run_all(temp_workspace, scratch_dir)
     assert all(r.passed for r in results)
 
 
-def test_preflight_invalid_repo(tmp_path: Path):
+def test_preflight_invalid_repo(tmp_path: Path) -> None:
     fake_dir = tmp_path / "not_a_repo"
     fake_dir.mkdir()
     res = PreflightGuardrails.check_is_git_repository(fake_dir)
@@ -24,8 +23,8 @@ def test_preflight_invalid_repo(tmp_path: Path):
     assert res.severity == GuardrailSeverity.HARD_GATE
 
 
-def test_inflight_duplicate_detection():
-    seen = set()
+def test_inflight_duplicate_detection() -> None:
+    seen: set[str] = set()
     diff = "--- a/foo.py\n+++ b/foo.py\n+x = 1\n"
 
     r1 = InflightGuardrails.check_duplicate_candidate(diff, seen)
@@ -39,7 +38,7 @@ def test_inflight_duplicate_detection():
     assert r2.severity == GuardrailSeverity.HARD_GATE
 
 
-def test_inflight_patch_proportionality():
+def test_inflight_patch_proportionality() -> None:
     normal_edits = [
         AnchoredEdit(file_path="a.py", old_text="x = 1", new_text="x = 2"),
         AnchoredEdit(file_path="b.py", old_text="y = 1", new_text="y = 2"),
@@ -56,7 +55,7 @@ def test_inflight_patch_proportionality():
     assert not res_excess.passed
 
 
-def test_postflight_secret_leak_detection():
+def test_postflight_secret_leak_detection() -> None:
     clean_diff = "--- a/file.py\n+++ b/file.py\n+x = 42\n"
     res_clean = PostflightGuardrails.check_diff_secret_leakage(clean_diff)
     assert res_clean.passed
@@ -67,7 +66,7 @@ def test_postflight_secret_leak_detection():
     assert res_leak.severity == GuardrailSeverity.HARD_GATE
 
 
-def test_postflight_digest_integrity():
+def test_postflight_digest_integrity() -> None:
     base_tree = "tree_hash_123"
     diff = "--- a/file.py\n+++ b/file.py\n+print(1)\n"
     from patchproof.core.digest import compute_patch_digest

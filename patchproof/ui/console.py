@@ -4,6 +4,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
+
 from patchproof.core.models import VerificationLevel, VerificationRecord
 
 console = Console()

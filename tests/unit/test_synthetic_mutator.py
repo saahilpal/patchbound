@@ -1,10 +1,11 @@
 """Unit tests for synthetic mutator bug injection."""
 
 from pathlib import Path
+
 from patchproof.eval.mutator import SyntheticMutator
 
 
-def test_generate_candidate_mutations(temp_workspace: Path):
+def test_generate_candidate_mutations(temp_workspace: Path) -> None:
     mutator = SyntheticMutator(temp_workspace)
     candidates = mutator.generate_candidate_mutations("calculator.py")
 
@@ -14,7 +15,7 @@ def test_generate_candidate_mutations(temp_workspace: Path):
     assert found_minus_mutation
 
 
-def test_inject_validated_bug_flips_test(temp_workspace: Path):
+def test_inject_validated_bug_flips_test(temp_workspace: Path) -> None:
     # In temp_workspace, test_calculator.py expects add(2, 3) == 5.
     # calculator.py originally has `return a - b` (failing).
     # Let's fix calculator.py so it passes first!

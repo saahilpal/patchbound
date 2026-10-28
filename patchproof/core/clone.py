@@ -1,8 +1,9 @@
 """Disposable repository cloning and host integrity invariant enforcement."""
 
-import subprocess
 import shutil
+import subprocess
 from pathlib import Path
+
 from patchproof.core.digest import compute_sha256
 
 
@@ -21,7 +22,7 @@ class CloneManager:
 
     def capture_host_state(self) -> str:
         """Capture cryptographic fingerprint of host repository state.
-        
+
         Fingerprint covers HEAD commit, branch references, working tree index,
         and git status output.
         """

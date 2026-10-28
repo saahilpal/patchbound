@@ -1,11 +1,12 @@
 """Unit tests for anti-cheat verification."""
 
 import pytest
+
 from patchproof.core.anti_cheat import AntiCheatChecker
 from patchproof.core.policy import PolicyViolation
 
 
-def test_anti_cheat_detects_assert_deletion():
+def test_anti_cheat_detects_assert_deletion() -> None:
     diff_with_deleted_assert = """
 --- a/src/logic.py
 +++ b/src/logic.py
@@ -17,7 +18,7 @@ def test_anti_cheat_detects_assert_deletion():
         AntiCheatChecker.check_assert_removal(diff_with_deleted_assert)
 
 
-def test_anti_cheat_python_ast():
+def test_anti_cheat_python_ast() -> None:
     old_code = "def check(x):\n    assert x > 0\n    return x\n"
     new_code = "def check(x):\n    return x\n"
 

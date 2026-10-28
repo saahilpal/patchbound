@@ -1,7 +1,9 @@
 """State definition and reducers for the PatchProof LangGraph pipeline."""
 
-from typing import Annotated, Any
+from typing import Annotated
+
 from typing_extensions import TypedDict
+
 from patchproof.core.models import (
     AnchoredEdit,
     FailureDelta,
@@ -43,6 +45,7 @@ class PatchProofState(TypedDict, total=False):
     # Identifiers & Metadata
     investigation_id: str
     repo_path: str
+    reproduce_cmd: list[str]
     reproduce_command: list[str]
     attempt: int
     max_attempts: int

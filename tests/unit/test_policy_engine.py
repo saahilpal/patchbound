@@ -1,10 +1,11 @@
 """Unit tests for the declarative policy engine."""
 
 import pytest
+
 from patchproof.core.policy import PolicyEngine, PolicyViolation
 
 
-def test_protected_path_rejection():
+def test_protected_path_rejection() -> None:
     engine = PolicyEngine()
     with pytest.raises(PolicyViolation, match="Modification of protected path is prohibited"):
         engine.check_file_path("tests/test_something.py")
@@ -16,7 +17,7 @@ def test_protected_path_rejection():
     engine.check_file_path("src/core/parser.py")
 
 
-def test_forbidden_pattern_detection():
+def test_forbidden_pattern_detection() -> None:
     engine = PolicyEngine()
     diff_with_skip = """
 --- a/foo.py
@@ -30,7 +31,7 @@ def test_forbidden_pattern_detection():
         engine.check_diff(diff_with_skip, ["foo.py"])
 
 
-def test_clean_diff_passes():
+def test_clean_diff_passes() -> None:
     engine = PolicyEngine()
     clean_diff = """
 --- a/src/math.py

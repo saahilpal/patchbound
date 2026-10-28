@@ -1,8 +1,8 @@
 """Synthetic bug injection engine for generating private, uncontaminated repair benchmarks."""
 
-import ast
 import random
 from pathlib import Path
+
 from patchproof.eval.datasets import EvalFixture
 from patchproof.verification.runner import VerificationRunner
 

@@ -1,6 +1,7 @@
 """Test runner coordinator executing tests inside sandboxes and parsing structured outputs."""
 
 from pathlib import Path
+
 from patchproof.core.sandbox import LocalTrustedSandbox, SandboxRunner
 from patchproof.verification.parsers.base import ParsedReport, TestReportParser
 from patchproof.verification.parsers.pytest_parser import PytestParser

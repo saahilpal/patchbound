@@ -1,6 +1,7 @@
 """Benchmark comparison table renderer and evaluation export."""
 
 from rich.table import Table
+
 from patchproof.eval.metrics import EvalMetricsSummary
 from patchproof.ui.console import console
 

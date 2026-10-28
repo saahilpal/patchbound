@@ -2,6 +2,7 @@
 
 import re
 import xml.etree.ElementTree as ET
+
 from patchproof.core.digest import compute_sha256
 from patchproof.core.models import FailureSignature, StackFrame
 from patchproof.verification.parsers.base import ParsedReport, TestReportParser
@@ -37,6 +38,7 @@ class PytestParser(TestReportParser):
                 report.total_skipped += 1
             elif failure is not None or error is not None:
                 node = failure if failure is not None else error
+                assert node is not None
                 error_type = node.attrib.get("type", "AssertionError")
                 message = node.attrib.get("message", "")
                 text = node.text or ""
@@ -52,14 +54,48 @@ class PytestParser(TestReportParser):
 
     def _parse_stdout(self, stdout: str) -> ParsedReport:
         report = ParsedReport()
-        # Look for FAILED tests/test_foo.py::test_bar - ErrorType: message
-        fail_matches = re.findall(r"FAILED\s+([^\s:]+(?:::[^\s]+)+)", stdout)
-        pass_matches = re.findall(r"PASSED\s+([^\s:]+(?:::[^\s]+)+)", stdout)
+        pass_ids: list[str] = []
+        fail_ids: list[str] = []
 
-        report.passed_test_ids = list(set(pass_matches))
-        report.total_passed = len(report.passed_test_ids)
+        # 1. Match pytest verbose style:
+        # tests/test_foo.py::test_bar PASSED
+        # PASSED tests/test_foo.py::test_bar
+        for m in re.finditer(r"(?:PASSED\s+([^\s]+::[^\s]+)|([^\s]+::[^\s]+)\s+PASSED)", stdout):
+            test_id = m.group(1) or m.group(2)
+            if test_id:
+                pass_ids.append(test_id)
 
-        for test_id in set(fail_matches):
+        # 2. Match pytest fail style:
+        # tests/test_foo.py::test_bar FAILED
+        # FAILED tests/test_foo.py::test_bar
+        for m in re.finditer(r"(?:FAILED\s+([^\s]+::[^\s]+)|([^\s]+::[^\s]+)\s+FAILED)", stdout):
+            test_id = m.group(1) or m.group(2)
+            if test_id:
+                fail_ids.append(test_id)
+
+        # 3. Match generic PASS / FAIL lines (e.g. runner scripts or jest stdout)
+        if not pass_ids and not fail_ids:
+            for m in re.finditer(r"^PASS\s+([^\s:]+)", stdout, re.MULTILINE):
+                pass_ids.append(m.group(1))
+            for m in re.finditer(r"^FAIL\s+([^\s:]+)", stdout, re.MULTILINE):
+                fail_ids.append(m.group(1))
+
+        # 4. Fallback for non-verbose summary format (e.g., "1 passed in 0.05s")
+        if not pass_ids and not fail_ids:
+            summary_pass = re.search(r"(\d+)\s+passed", stdout)
+            summary_fail = re.search(r"(\d+)\s+failed", stdout)
+            if summary_pass:
+                report.total_passed = int(summary_pass.group(1))
+            if summary_fail:
+                report.total_failed = int(summary_fail.group(1))
+                sig = self._create_signature("test_suite", "TestFailure", "Failed during test run", stdout)
+                report.failed_signatures.append(sig)
+
+        report.passed_test_ids = sorted(set(pass_ids))
+        if pass_ids:
+            report.total_passed = len(report.passed_test_ids)
+
+        for test_id in sorted(set(fail_ids)):
             report.total_failed += 1
             sig = self._create_signature(test_id, "TestFailure", "Failed during test run", stdout)
             report.failed_signatures.append(sig)

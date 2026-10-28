@@ -1,7 +1,8 @@
 """Standard context provider using deterministic primitives (grep, AST, git log)."""
 
-from pathlib import Path
 import subprocess
+from pathlib import Path
+
 from patchproof.context.base import ContextProvider, SymbolLocation
 
 

@@ -1,10 +1,12 @@
 """Stage 2: Parse and Triage (Deterministic with LLM fallback)."""
 
+from typing import Any
+
 from patchproof.core.models import ProcessStatus
 from patchproof.graph.state import PatchProofState
 
 
-def parse_triage_node(state: PatchProofState) -> dict:
+def parse_triage_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 2: Extract normalized failure signatures, using cheap LLM fallback only if needed."""
     signatures = state.get("failure_signatures", [])
 

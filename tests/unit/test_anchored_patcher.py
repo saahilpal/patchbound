@@ -1,12 +1,14 @@
 """Unit tests for the anchored edit patcher."""
 
 from pathlib import Path
+
 import pytest
+
 from patchproof.core.models import AnchoredEdit
 from patchproof.core.patcher import PatchApplicationError, Patcher
 
 
-def test_anchored_edit_application(temp_workspace: Path):
+def test_anchored_edit_application(temp_workspace: Path) -> None:
     patcher = Patcher(temp_workspace)
     edits = [
         AnchoredEdit(
@@ -23,7 +25,7 @@ def test_anchored_edit_application(temp_workspace: Path):
     assert len(digest) == 64  # SHA-256
 
 
-def test_missing_anchor_raises_error(temp_workspace: Path):
+def test_missing_anchor_raises_error(temp_workspace: Path) -> None:
     patcher = Patcher(temp_workspace)
     edits = [
         AnchoredEdit(

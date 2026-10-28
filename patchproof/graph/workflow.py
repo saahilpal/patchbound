@@ -1,6 +1,10 @@
 """LangGraph 9-stage StateGraph compilation and transition logic."""
 
+from typing import Any
+
 from langgraph.graph import END, StateGraph
+from langgraph.graph.state import CompiledStateGraph
+
 from patchproof.core.models import ProcessStatus, VerificationLevel
 from patchproof.graph.nodes.export_report import export_report_node
 from patchproof.graph.nodes.fixer import fixer_node
@@ -50,7 +54,7 @@ def check_approval_route(state: PatchProofState) -> str:
     return END
 
 
-def create_patchproof_graph() -> StateGraph:
+def create_patchproof_graph() -> StateGraph[PatchProofState, Any, Any, Any]:
     """Construct and configure the LangGraph 9-stage workflow."""
     workflow = StateGraph(PatchProofState)
 
@@ -102,6 +106,6 @@ def create_patchproof_graph() -> StateGraph:
     return workflow
 
 
-def compile_patchproof_graph():
+def compile_patchproof_graph() -> CompiledStateGraph[PatchProofState, Any, Any, Any]:
     """Compile executable LangGraph workflow."""
     return create_patchproof_graph().compile()

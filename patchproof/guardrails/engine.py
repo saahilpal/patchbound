@@ -1,6 +1,7 @@
 """Central guardrail coordinator orchestrating safety checks across pipeline lifecycle."""
 
 from pathlib import Path
+
 from patchproof.core.models import AnchoredEdit
 from patchproof.guardrails.base import GuardrailCheckResult, GuardrailSeverity, GuardrailViolation
 from patchproof.guardrails.inflight import InflightGuardrails
@@ -11,7 +12,7 @@ from patchproof.guardrails.preflight import PreflightGuardrails
 class GuardrailEngine:
     """Coordinates lifecycle guardrails across preflight, inflight, and postflight stages."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.seen_diff_hashes: set[str] = set()
         self.audit_results: list[GuardrailCheckResult] = []
 

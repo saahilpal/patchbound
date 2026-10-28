@@ -1,13 +1,15 @@
 """Stage 7: Review (Deterministic anti-cheat + Blind LLM Reviewer)."""
 
+from typing import Any
+
 from patchproof.core.models import ProcessStatus
 from patchproof.graph.state import PatchProofState
 
 
-def review_node(state: PatchProofState) -> dict:
+def review_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 7: Blind review of canonical diff and execution of probe tests."""
-    record = state.get("verification_record")
-    canonical_diff = state.get("canonical_diff", "")
+    state.get("verification_record")
+    state.get("canonical_diff", "")
 
     # In production, this prompts the Reviewer model with clean context
     # (without fixer's rationale) to independently summarize what the patch does

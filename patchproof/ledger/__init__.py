@@ -2,7 +2,11 @@
 
 from patchproof.ledger.claim import ClaimItem, ClaimType, CodeCitation
 from patchproof.ledger.experiment import ExperimentRecord, ExperimentRunner, ExperimentStatus
-from patchproof.ledger.validator import CitationFabricationError, GroundingValidator
+from patchproof.ledger.validator import (
+    CitationFabricationError,
+    CitationValidator,
+    GroundingValidator,
+)
 
 __all__ = [
     "ClaimItem",
@@ -12,5 +16,6 @@ __all__ = [
     "ExperimentRunner",
     "ExperimentStatus",
     "CitationFabricationError",
+    "CitationValidator",
     "GroundingValidator",
 ]

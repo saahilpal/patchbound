@@ -1,10 +1,11 @@
 """Cryptographic claim ledger data models and typed claims."""
 
-from enum import Enum
+from enum import StrEnum
+
 from pydantic import BaseModel, Field
 
 
-class ClaimType(str, Enum):
+class ClaimType(StrEnum):
     """Epistemological claim categories."""
 
     OBSERVED = "observed"  # Raw facts observed directly from deterministic execution

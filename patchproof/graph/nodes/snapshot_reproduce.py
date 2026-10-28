@@ -1,20 +1,22 @@
 """Stage 1: Snapshot and Reproduce (Deterministic)."""
 
 from pathlib import Path
+from typing import Any
+
 from patchproof.config import settings
 from patchproof.core.clone import CloneManager
 from patchproof.core.models import ProcessStatus
 from patchproof.graph.state import PatchProofState
-from patchproof.verification.parsers.pytest_parser import PytestParser
 from patchproof.verification.runner import VerificationRunner
 
 
-def snapshot_reproduce_node(state: PatchProofState) -> dict:
+def snapshot_reproduce_node(state: PatchProofState) -> dict[str, Any]:
     """Stage 1: Create disposable clone and execute reproduction baseline N times."""
-    investigation_id = state.get("investigation_id", "inv-001")
-    repo_path = Path(state.get("repo_path", "."))
-    reproduce_cmd = state.get("reproduce_cmd", ["pytest", "-v"])
-    attempt = state.get("attempt", 0)
+    investigation_id = str(state.get("investigation_id", "inv-001"))
+    repo_path = Path(str(state.get("repo_path", ".")))
+    raw_cmd = state.get("reproduce_cmd") or state.get("reproduce_command")
+    reproduce_cmd: list[str] = [str(c) for c in raw_cmd] if isinstance(raw_cmd, list) else ["pytest", "-v"]
+    attempt = int(state.get("attempt", 0))
 
     clone_mgr = CloneManager(repo_path, settings.workspace_root)
     clone_mgr.record_pre_state()

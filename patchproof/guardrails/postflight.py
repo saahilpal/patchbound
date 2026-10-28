@@ -1,8 +1,9 @@
 """Post-flight guardrails verifying patch integrity, cryptographic signatures, and zero secrets."""
 
 import re
+
 from patchproof.core.digest import compute_patch_digest
-from patchproof.guardrails.base import GuardrailCheckResult, GuardrailSeverity, GuardrailViolation
+from patchproof.guardrails.base import GuardrailCheckResult, GuardrailSeverity
 from patchproof.llm.egress import EgressGate
 
 
@@ -36,7 +37,7 @@ class PostflightGuardrails:
     @staticmethod
     def check_diff_secret_leakage(canonical_diff: str) -> GuardrailCheckResult:
         """Ensure no private keys, AWS tokens, or environment credentials are introduced in the patch."""
-        for pattern, replacement in EgressGate.SECRET_PATTERNS:
+        for pattern, _replacement in EgressGate.SECRET_PATTERNS:
             if re.search(pattern, canonical_diff, flags=re.IGNORECASE):
                 return GuardrailCheckResult(
                     guardrail_id="POST-02-SECRET-LEAK",

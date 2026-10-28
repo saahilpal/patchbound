@@ -2,8 +2,9 @@
 
 import subprocess
 from pathlib import Path
-from patchproof.core.models import AnchoredEdit
+
 from patchproof.core.digest import compute_patch_digest
+from patchproof.core.models import AnchoredEdit
 
 
 class PatchApplicationError(Exception):
@@ -27,7 +28,7 @@ class Patcher:
 
     def apply_edits(self, edits: list[AnchoredEdit]) -> tuple[str, str]:
         """Apply a sequence of anchored edits.
-        
+
         Returns:
             Tuple of (canonical_diff, patch_digest).
         """

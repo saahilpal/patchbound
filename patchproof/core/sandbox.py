@@ -1,9 +1,9 @@
 """Two-phase sandbox execution environment for untrusted builds and tests."""
 
+import subprocess
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-import subprocess
 
 
 @dataclass

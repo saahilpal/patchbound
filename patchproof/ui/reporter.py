@@ -2,6 +2,8 @@
 
 import json
 from pathlib import Path
+from typing import Any
+
 from patchproof.core.models import VerificationRecord
 from patchproof.ledger.claim import ClaimItem
 
@@ -81,7 +83,7 @@ class ReportGenerator:
     @staticmethod
     def export_json(
         export_path: Path,
-        payload: dict,
+        payload: dict[str, Any],
     ) -> None:
         """Write structured JSON audit record to disk."""
         export_path.parent.mkdir(parents=True, exist_ok=True)

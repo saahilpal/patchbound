@@ -1,7 +1,9 @@
 """Command-line interface for PatchProof v1.1."""
 
 from pathlib import Path
+
 import click
+
 from patchproof import __version__
 from patchproof.config import settings
 from patchproof.core.models import ProcessStatus
@@ -12,7 +14,6 @@ from patchproof.eval.runner import BenchmarkRunner
 from patchproof.graph.workflow import compile_patchproof_graph
 from patchproof.guardrails.engine import GuardrailEngine
 from patchproof.ui.console import PatchProofUI, console
-from patchproof.ui.reporter import ReportGenerator
 
 
 @click.group()

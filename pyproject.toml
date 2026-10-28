@@ -52,3 +52,8 @@ python_version = "3.11"
 strict = true
 warn_unused_configs = true
 exclude = ["tests/fixtures"]
+
+[dependency-groups]
+dev = [
+    "types-pyyaml>=6.0.12.20260906",
+]

@@ -3,7 +3,7 @@
 from patchproof.eval.metrics import EvalCalculator
 
 
-def test_wilson_score_interval():
+def test_wilson_score_interval() -> None:
     # 0 out of 100 successes
     lower, upper = EvalCalculator.wilson_score_interval(0, 100)
     assert lower == 0.0
@@ -15,7 +15,7 @@ def test_wilson_score_interval():
     assert 0.50 < upper < 0.60
 
 
-def test_compute_summary_false_verified_rate():
+def test_compute_summary_false_verified_rate() -> None:
     results = [
         {"verification_level": "V3", "held_out_failed": False, "duration_seconds": 10.0, "cost_usd": 0.05},
         {"verification_level": "V3", "held_out_failed": False, "duration_seconds": 12.0, "cost_usd": 0.05},
@@ -34,7 +34,7 @@ def test_compute_summary_false_verified_rate():
     assert summary.fvr_ci_upper < 1.0
 
 
-def test_abstention_metrics():
+def test_abstention_metrics() -> None:
     results = [
         {"outcome": "diagnosis_only", "expected_unrepairable": True, "cost_usd": 0.01},
         {"outcome": "flaky", "expected_unrepairable": True, "cost_usd": 0.01},

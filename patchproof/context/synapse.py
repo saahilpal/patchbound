@@ -1,6 +1,7 @@
 """Synapse structural code graph provider adapter stub."""
 
 from pathlib import Path
+
 from patchproof.context.base import ContextProvider, SymbolLocation
 from patchproof.context.standard import StandardContextProvider
 
