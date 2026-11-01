@@ -121,4 +121,4 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 ## 💬 Getting Help
 
 - Join our [GitHub Discussions](https://github.com/saahilpal/patchbound/discussions).
-- Check our comprehensive documentation in the [`docs/`](../docs/) directory.
+- Check our comprehensive documentation in the [`docs/`](docs/) directory.

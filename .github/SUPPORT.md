@@ -9,13 +9,14 @@ Welcome to the PatchBound community! Here are the best ways to get support, ask 
 Before opening an issue or discussion, check our comprehensive technical specifications:
 
 - 📋 [**Product Requirements Document (PRD)**](../docs/PRD.md)
-- 🏛️ [**Architecture Specification**](../docs/ARCHITECTURE.md)
-- 🗺️ [**Engineering Roadmap**](../docs/ROADMAP.md)
-- 🛡️ [**System Design & Trust Boundary**](../docs/SYSTEM_DESIGN_AND_TRUST_BOUNDARY.md)
-- 🔬 [**Verification & Claim Ledger**](../docs/VERIFICATION_AND_CLAIM_LEDGER.md)
-- 🔄 [**LangGraph State Machine**](../docs/LANGGRAPH_STATE_MACHINE.md)
-- 📊 [**Evaluation Harness**](../docs/EVALUATION_HARNESS.md)
-- 🔌 [**API & Interface Contracts**](../docs/API_AND_INTERFACES.md)
+- 🏛️ [**Architecture Overview**](../docs/architecture/overview.md)
+- 📐 [**Target Verification Engine Specification**](../docs/architecture/verification-engine-spec.md)
+- 🗺️ [**Decision-Gated Roadmap**](../docs/audits/ROADMAP.md)
+- 🛡️ [**Trust Boundaries & Sandboxing**](../docs/security/trust-boundaries.md)
+- 🔬 [**Verification Design & Claim Ledger**](../docs/architecture/verification.md)
+- 🔄 [**LangGraph State Machine**](../docs/architecture/orchestration.md)
+- 📊 [**Benchmark Methodology & Results**](../docs/benchmarks/methodology-and-results.md)
+- 🔌 [**API Reference & Contracts**](../docs/development/api-reference.md)
 
 ---
 

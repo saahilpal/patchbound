@@ -2,7 +2,7 @@
 
 **Document:** Evaluation Protocol & Empirical Benchmark Results  
 **Status:** Approved & Verified (v1.1.0)  
-**Index:** [Benchmarks Index](methodology-and-results.md) • [Phase 3 Benchmark Audit](../audits/repair-benchmark-report.md)
+**Index:** [Benchmarks Index](methodology-and-results.md) • [Engineering Audit](../audits/ENGINEERING_AUDIT.md)
 
 ---
 
@@ -18,7 +18,7 @@ PatchBound avoids vanity metrics (such as unverified fix rates or claims based o
 
 ## 2. The 5-Fixture Reproducible Benchmark Suite
 
-The automated benchmark suite ([`tests/integration/test_repair_benchmark.py`](file:///Users/nitrousoxide/Code/patchbound/tests/integration/test_repair_benchmark.py)) contains 5 diverse bug scenarios:
+The automated benchmark suite ([`tests/integration/test_repair_benchmark.py`](../../tests/integration/test_repair_benchmark.py)) contains 5 diverse bug scenarios:
 
 | Fixture ID | Category | Nature of Defect | Expected Outcome | Verification Standard |
 | :--- | :--- | :--- | :--- | :--- |

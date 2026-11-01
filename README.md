@@ -568,6 +568,7 @@ patchbound auth status
 Comprehensive documentation is organized in [`docs/`](docs/README.md):
 
 - 🏛️ [**Architecture Overview**](docs/architecture/overview.md)
+- 📐 [**Target Verification Engine Specification (HLD/LLD)**](docs/architecture/verification-engine-spec.md)
 - 🔄 [**LangGraph State Machine**](docs/architecture/orchestration.md)
 - 🔌 [**Context Providers & Synapse**](docs/architecture/context-providers.md)
 - 🔬 [**Verification Design & Claim Ledger**](docs/architecture/verification.md)
@@ -581,9 +582,10 @@ Comprehensive documentation is organized in [`docs/`](docs/README.md):
 - 🤝 [**Contributing Guide**](docs/development/contributing.md)
 - 📋 [**API Reference**](docs/development/api-reference.md)
 - 📊 [**Benchmark Methodology & Results**](docs/benchmarks/methodology-and-results.md)
-- 🛡️ [**Phase 3 Adversarial Security Audit**](docs/audits/security-adversarial-report.md)
-- 📈 [**Phase 3 Repair Benchmark Audit**](docs/audits/repair-benchmark-report.md)
-- 🚦 [**Phase 3 Blockers & Release Decision**](docs/audits/phase3-blockers.md)
+- 🔍 [**Engineering Audit**](docs/audits/ENGINEERING_AUDIT.md)
+- 📊 [**Product Audit**](docs/audits/PRODUCT_AUDIT.md)
+- ⚖️ [**Executive Verdict**](docs/audits/EXECUTIVE_VERDICT.md)
+- 🗺️ [**Decision-Gated Roadmap**](docs/audits/ROADMAP.md)
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Document:** Threat Model, Attack Surface Analysis, & Defenses  
 **Status:** Approved & Verified (v1.1.0)  
-**Index:** [Trust Boundaries](trust-boundaries.md) • [Threat Model & Defenses](threat-model.md) • [Security Audit Report](../audits/security-adversarial-report.md)
+**Index:** [Trust Boundaries](trust-boundaries.md) • [Threat Model & Defenses](threat-model.md) • [Engineering Audit](../audits/ENGINEERING_AUDIT.md)
 
 ---
 

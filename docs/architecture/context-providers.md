@@ -19,7 +19,7 @@ PatchBound resolves this by abstracting code intelligence behind a typed interfa
 
 ## 2. The `ContextProvider` Protocol
 
-All context providers implement the standard interface defined in [`patchbound/context/base.py`](file:///Users/nitrousoxide/Code/patchbound/patchbound/context/base.py):
+All context providers implement the standard interface defined in [`patchbound/context/base.py`](../../patchbound/context/base.py):
 
 ```python
 class ContextProvider(ABC):

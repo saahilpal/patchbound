@@ -1,10 +1,13 @@
 # PatchBound Documentation Suite
 
-Welcome to the technical documentation for **PatchBound v1.1.0** — the deterministic trust boundary and bounded AI repair engine for automated software verification.
+Welcome to the technical documentation for **PatchBound v1.1.0**. This collection includes documentation of the current code and a proposed redesign for deterministic patch verification.
+
+> **Architecture status:** [The verification-engine HLD/LLD](architecture/verification-engine-spec.md) is a proposed redesign, not a description of current behavior. See the [independent engineering audit](audits/ENGINEERING_AUDIT.md) for verified implementation gaps.
 
 ---
 
 ## 🏛️ Architecture & System Design
+- [**Verification Engine HLD/LLD (proposed)**](architecture/verification-engine-spec.md): Trusted supervisor, sandbox, split-job GitHub Actions model, evidence schemas, pure judge, test transplant, and property-test plan.
 - [**Architecture Overview**](architecture/overview.md): System topology, the 9-stage execution pipeline, and the thick deterministic spine.
 - [**LangGraph State Machine**](architecture/orchestration.md): Orchestration graph, `PatchBoundState` schema, failure deltas, and state transitions.
 - [**Context Providers**](architecture/context-providers.md): Standard Git context vs Synapse structural AST SQLite context, selection modes, and fallback guarantees.
@@ -38,17 +41,15 @@ Welcome to the technical documentation for **PatchBound v1.1.0** — the determi
 
 ---
 
-## 📋 Historical Audit Reports
-- [**Phase 3 Adversarial Security Report**](audits/security-adversarial-report.md): Red-team testing covering path traversal, symlinks, unapproved patch gating, and journal tampering.
-- [**Phase 3 Repair Benchmark Report**](audits/repair-benchmark-report.md): Detailed 5-fixture empirical benchmark results, runtime, cost, and provider evaluation.
-- [**Phase 3 Blockers & Decision Report**](audits/phase3-blockers.md): Verification evidence, environmental blockers, and final release GO recommendation.
-- [**Phase 2 E2E Validation Report**](audits/e2e-validation-report.md): Verification across all 8 real-world repair scenarios and Synapse FastMCP contracts.
-- [**Phase 2 Feature Verification Matrix**](audits/feature-verification-matrix.md): Exhaustive feature-by-feature verification ledger.
-- [**Phase 2 Manual Test Results**](audits/manual-test-results.md): Step-by-step raw command outputs and manual verification evidence.
-- [**Defect Backlog**](audits/defect-backlog.md): Prioritized backlog of discovered and resolved items.
+## 🔍 Independent Audits & Strategic Analysis
+- [**Engineering Audit**](audits/ENGINEERING_AUDIT.md): Comprehensive source inspection, contract verification, and verified implementation gaps.
+- [**Product Audit**](audits/PRODUCT_AUDIT.md): Assessment of target users, competitive workflows, differentiation, and product viability.
+- [**Executive Verdict**](audits/EXECUTIVE_VERDICT.md): Executive summary and strategic recommendation on product direction.
+- [**Component Disposition Inventory**](audits/KEEP_REMOVE_REWRITE.md): Component-by-component analysis classifying systems as keep, simplify, rewrite, or remove.
+- [**Contingent Target Architecture**](audits/TARGET_ARCHITECTURE.md): Minimal replacement design for narrow, reliable patch-evidence workflows.
+- [**Decision-Gated Roadmap**](audits/ROADMAP.md): Prioritized remediation and discovery gates (P0–P3, NEVER).
 
 ---
 
-## 📜 Specifications & Strategy
+## 📜 Specifications & Requirements
 - [**Product Requirements Document (PRD)**](PRD.md): Product vision, user personas, functional & non-functional requirements.
-- [**Engineering Roadmap**](ROADMAP.md): Milestones M1 through M4, falsifiable hypotheses, and explicit deferrals.
