@@ -1,8 +1,9 @@
-# PatchBound Documentation Suite
+# PatchBound Documentation
 
-Welcome to the technical documentation for **PatchBound v1.1.0**. This collection includes documentation of the current code and a proposed redesign for deterministic patch verification.
+Welcome to the documentation for **PatchBound**. This folder contains the technical design files, user guides, and audit reports written during the project.
 
-> **Architecture status:** [The verification-engine HLD/LLD](architecture/verification-engine-spec.md) is a proposed redesign, not a description of current behavior. See the [independent engineering audit](audits/ENGINEERING_AUDIT.md) for verified implementation gaps.
+> [!NOTE]
+> **Project Status:** PatchBound has been discontinued. Read [**POSTMORTEM.md**](../POSTMORTEM.md) for the honest story of why I stopped working on it.
 
 ---
 
